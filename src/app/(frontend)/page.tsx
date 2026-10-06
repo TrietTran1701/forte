@@ -1,29 +1,64 @@
 import { Google_Sans_Flex, Wix_Madefor_Display } from 'next/font/google'
 import React from 'react'
 
+import { getSiteUrl, siteDescription, siteHeadline, siteName, siteTitle } from '@/lib/site'
+
+import { SiteHeader } from './site-header'
 import './styles.css'
 
 const bodyFont = Google_Sans_Flex({
   subsets: ['latin'],
-  weight: '500',
+  weight: ['500', '600'],
 })
 
 const displayFont = Wix_Madefor_Display({
   subsets: ['latin'],
-  weight: ['400', '500'],
+  weight: ['400', '500', '600'],
 })
 
 const navItems = ['Products', 'Applications', 'Technology', 'About Us']
 
-export const metadata = {
-  description: 'We’re working on something great. Please check back later.',
-  title: 'Page Under Construction',
+const siteUrl = getSiteUrl()
+
+const structuredData = {
+  '@context': 'https://schema.org',
+  '@graph': [
+    {
+      '@type': 'Organization',
+      '@id': `${siteUrl}/#organization`,
+      name: siteName,
+      url: siteUrl,
+      logo: `${siteUrl}/logo.svg`,
+      description: siteDescription,
+    },
+    {
+      '@type': 'WebSite',
+      '@id': `${siteUrl}/#website`,
+      name: siteName,
+      url: siteUrl,
+      description: siteDescription,
+      publisher: { '@id': `${siteUrl}/#organization` },
+    },
+    {
+      '@type': 'WebPage',
+      '@id': `${siteUrl}/#webpage`,
+      url: siteUrl,
+      name: siteTitle,
+      description: siteDescription,
+      isPartOf: { '@id': `${siteUrl}/#website` },
+      about: { '@id': `${siteUrl}/#organization` },
+    },
+  ],
 }
 
 export default function HomePage() {
   return (
     <div className={`empty-stage ${displayFont.className}`}>
-      <header className="empty-stage__bar">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
+      />
+      <SiteHeader bodyClassName={bodyFont.className}>
         <img alt="Forte" className="empty-stage__logo" height={44} src="/logo.svg" width={44} />
         <div className="empty-stage__actions">
           <nav aria-label="Primary" className={bodyFont.className}>
@@ -37,7 +72,25 @@ export default function HomePage() {
             Contact Us
           </button>
         </div>
-      </header>
+      </SiteHeader>
+      <section className="hero">
+        <img
+          alt=""
+          className="hero__image"
+          height={812}
+          src="/images/Hero%20Section.png"
+          width={375}
+        />
+        <div className="hero__copy">
+          <div className="hero__text">
+            <h1>{siteHeadline}</h1>
+            <p className={bodyFont.className}>{siteDescription}</p>
+          </div>
+          <button className={`hero__cta ${bodyFont.className}`} type="button">
+            Get a Demo
+          </button>
+        </div>
+      </section>
       <section className="empty-stage__content">
         <img
           alt=""
