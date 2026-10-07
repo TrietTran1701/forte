@@ -3,12 +3,13 @@ import React from 'react'
 
 import { getSiteUrl, siteDescription, siteHeadline, siteName, siteTitle } from '@/lib/site'
 
+import { CardCarousel } from './card-carousel'
 import { SiteHeader } from './site-header'
 import './styles.css'
 
 const bodyFont = Google_Sans_Flex({
   subsets: ['latin'],
-  weight: ['500', '600'],
+  weight: ['400', '500', '600'],
 })
 
 const displayFont = Wix_Madefor_Display({
@@ -90,6 +91,23 @@ export default function HomePage() {
             Get a Demo
           </button>
         </div>
+      </section>
+      <section aria-labelledby="about-heading" className="about">
+        <div className="about__copy">
+          <div className="about__intro">
+            <p className={`about__eyebrow ${bodyFont.className}`}>Key Benefits</p>
+            <h2 className="about__title" id="about-heading">
+              Intelligent control for autonomous operations.
+            </h2>
+          </div>
+          <p className={`about__body ${bodyFont.className}`}>
+            Forte combines intelligent <span className="about__emphasis">mission control</span> with{' '}
+            <span className="about__emphasis">autonomous drone fleets</span> to help security teams see
+            more, <span className="about__emphasis">coordinate faster</span>, and operate with{' '}
+            <span className="about__emphasis">greater control</span>.
+          </p>
+        </div>
+        <CardCarousel bodyClassName={bodyFont.className} />
       </section>
       <section className="empty-stage__content">
         <img
