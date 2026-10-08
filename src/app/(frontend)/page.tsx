@@ -84,7 +84,7 @@ export default function HomePage() {
             <h1>{siteHeadline}</h1>
             <p className={bodyFont.className}>{siteDescription}</p>
           </div>
-          <a className={`hero__cta ${bodyFont.className}`} href="#contact-email">
+          <a className={`hero__cta ${bodyFont.className}`} href="#contact">
             Get a Demo
           </a>
         </div>
@@ -139,7 +139,7 @@ export default function HomePage() {
         </div>
         <CustomersCarousel bodyClassName={bodyFont.className} />
       </section>
-      <section aria-labelledby="contact-heading" className="contact">
+      <section aria-labelledby="contact-heading" className="contact" id="contact">
         <img
           alt=""
           className="contact__image"
@@ -163,7 +163,7 @@ export default function HomePage() {
               <li>Expert support</li>
             </ul>
           </div>
-          <div className={`contact__form ${bodyFont.className}`} id="contact-email">
+          <div className={`contact__form ${bodyFont.className}`}>
             <label className="contact__field">
               <img alt="" className="contact__mail" height={20} src="/mail.svg" width={20} />
               <input aria-label="Work email address" placeholder="Work email address" type="email" />
@@ -215,7 +215,7 @@ export default function HomePage() {
                     </a>
                   </li>
                   <li className="footer__item">
-                    <a className="footer__link" href="#contact-heading">
+                    <a className="footer__link" href="#contact">
                       Contact
                     </a>
                   </li>

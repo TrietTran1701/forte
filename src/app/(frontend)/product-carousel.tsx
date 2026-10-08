@@ -10,6 +10,11 @@ gsap.registerPlugin(useGSAP)
 
 const SLIDE_SECONDS = 0.5
 const DRAG_THRESHOLD = 48
+const CAPTION_FRAME = 375
+const CAPTION_ACTIVE = { width: 293, height: 120 }
+const CAPTION_INACTIVE = { width: 242, height: 99, y: 21 }
+const CAPTION_GAP = 12
+const CAPTION_INSET = 41
 
 type ProductSlide = {
   src: string
@@ -68,6 +73,59 @@ export function ProductCarousel({ bodyClassName }: { bodyClassName: string }) {
       return (card?.offsetWidth || 0) + gap
     }
 
+    const captionViewport = root.querySelector<HTMLElement>('.product-carousel__captions')
+    const captionTrack = root.querySelector<HTMLElement>('.product-carousel__caption-track')
+    const captions = captionTrack
+      ? gsap.utils.toArray<HTMLElement>('.product-carousel__caption', captionTrack)
+      : []
+
+    const captionMetrics = () => {
+      const width = captionViewport?.offsetWidth || 0
+      if (width <= 0) return null
+
+      const scale = width / CAPTION_FRAME
+      return {
+        activeW: CAPTION_ACTIVE.width * scale,
+        inactiveW: CAPTION_INACTIVE.width * scale,
+        activeH: CAPTION_ACTIVE.height * scale,
+        inactiveH: CAPTION_INACTIVE.height * scale,
+        inactiveY: CAPTION_INACTIVE.y * scale,
+        gap: CAPTION_GAP * scale,
+        inset: CAPTION_INSET * scale,
+      }
+    }
+
+    const placeCaptions = (index: number, duration: number) => {
+      const metrics = captionMetrics()
+      if (!metrics || !captionTrack || !captionViewport) return
+
+      captionTrack.style.gap = `${metrics.gap}px`
+      captionTrack.style.paddingLeft = `${metrics.inset}px`
+      captionViewport.style.height = `${metrics.activeH}px`
+      gsap.to(captions, {
+        width: (i: number) => (i === index ? metrics.activeW : metrics.inactiveW),
+        height: (i: number) => (i === index ? metrics.activeH : metrics.inactiveH),
+        marginTop: (i: number) => (i === index ? 0 : metrics.inactiveY),
+        opacity: (i: number) => (i === index ? 1 : 0),
+        duration,
+        ease: EASE_IN_OUT,
+        overwrite: 'auto',
+      })
+      gsap.to(captionTrack, {
+        x: -index * (metrics.inactiveW + metrics.gap),
+        duration,
+        ease: EASE_IN_OUT,
+        overwrite: 'auto',
+      })
+    }
+
+    const captionXForPhoto = (photoX: number) => {
+      const metrics = captionMetrics()
+      const photoStep = step()
+      if (!metrics || !photoStep) return 0
+      return photoX * ((metrics.inactiveW + metrics.gap) / photoStep)
+    }
+
     const playback = {
       goTo: (_next: number) => {},
     }
@@ -76,28 +134,33 @@ export function ProductCarousel({ bodyClassName }: { bodyClassName: string }) {
       const index = Math.max(0, Math.min(lastIndex, next))
       indexRef.current = index
       setActiveIndex(index)
+      const duration = reducedMotion ? 0 : SLIDE_SECONDS
       slideTween?.kill()
       slideTween = gsap.to(track, {
         x: -index * step(),
-        duration: reducedMotion ? 0 : SLIDE_SECONDS,
+        duration,
         ease: EASE_IN_OUT,
         overwrite: 'auto',
       })
+      placeCaptions(index, duration)
     })
 
     goToRef.current = playback.goTo
+    placeCaptions(0, 0)
 
     const viewport = root.querySelector<HTMLElement>('.product-carousel__viewport')
     if (!viewport) return
 
     const snapBack = contextSafe(() => {
+      const duration = reducedMotion ? 0 : 0.45
       slideTween?.kill()
       slideTween = gsap.to(track, {
         x: -indexRef.current * step(),
-        duration: reducedMotion ? 0 : 0.45,
+        duration,
         ease: EASE_IN_OUT,
         overwrite: 'auto',
       })
+      placeCaptions(indexRef.current, duration)
     })
 
     const onPointerDown = (event: PointerEvent) => {
@@ -112,7 +175,9 @@ export function ProductCarousel({ bodyClassName }: { bodyClassName: string }) {
 
     const onPointerMove = contextSafe((event: PointerEvent) => {
       if (!drag || drag.pointerId !== event.pointerId) return
-      gsap.set(track, { x: drag.origin + (event.clientX - drag.x) })
+      const photoX = drag.origin + (event.clientX - drag.x)
+      gsap.set(track, { x: photoX })
+      if (captionTrack) gsap.set(captionTrack, { x: captionXForPhoto(photoX) })
     })
 
     const onPointerUp = contextSafe((event: PointerEvent) => {
@@ -135,6 +200,7 @@ export function ProductCarousel({ bodyClassName }: { bodyClassName: string }) {
 
     const onResize = contextSafe(() => {
       gsap.set(track, { x: -indexRef.current * step() })
+      placeCaptions(indexRef.current, 0)
     })
 
     const onKeyDown = (event: KeyboardEvent) => {
@@ -207,15 +273,17 @@ export function ProductCarousel({ bodyClassName }: { bodyClassName: string }) {
           <Chevron direction="left" />
         </button>
         <div aria-live="polite" className="product-carousel__captions">
-          {productSlides.map((slide, index) => (
-            <p
-              aria-hidden={index !== activeIndex}
-              className={`product-carousel__caption${index === activeIndex ? ' product-carousel__caption--active' : ''}`}
-              key={slide.title}
-            >
-              <span className="product-carousel__label">{slide.title}</span> {slide.description}
-            </p>
-          ))}
+          <div className="product-carousel__caption-track">
+            {productSlides.map((slide, index) => (
+              <p
+                aria-hidden={index !== activeIndex}
+                className={`product-carousel__caption${index === activeIndex ? ' product-carousel__caption--active' : ''}`}
+                key={slide.title}
+              >
+                <span className="product-carousel__label">{slide.title}</span> {slide.description}
+              </p>
+            ))}
+          </div>
         </div>
         <button
           aria-label="Next product"

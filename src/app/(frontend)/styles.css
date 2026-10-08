@@ -576,6 +576,8 @@ button {
     min-width: 0;
     height: 444px;
     overflow: hidden;
+    /* Clears the fixed header so anchor jumps land on the eyebrow, not mid-copy. */
+    scroll-margin-top: 112px;
   }
 
   .footer {
@@ -963,23 +965,29 @@ button {
 }
 
 .product-carousel__captions {
-  display: grid;
-  width: calc(100% - 82px);
+  width: 100%;
+  max-width: 100%;
   min-width: 0;
+  height: 120px;
+  overflow: hidden;
+}
+
+.product-carousel__caption-track {
+  display: flex;
+  align-items: flex-start;
+  width: max-content;
+  max-width: none;
+  min-width: 0;
+  height: 100%;
 }
 
 .product-carousel__caption {
-  grid-area: 1 / 1;
-  width: 100%;
+  flex: 0 0 auto;
   min-width: 0;
   margin: 0;
+  overflow: hidden;
   opacity: 0;
   pointer-events: none;
-  transform: translateY(21px) scale(0.826);
-  transform-origin: top center;
-  transition:
-    opacity 0.5s ease-in-out,
-    transform 0.5s ease-in-out;
   padding: var(--spacing-4);
   border-radius: 20px;
   background: var(--surface-bg);
@@ -991,8 +999,6 @@ button {
 }
 
 .product-carousel__caption--active {
-  opacity: 1;
-  transform: translateY(0) scale(1);
   pointer-events: auto;
 }
 
@@ -1409,7 +1415,6 @@ button {
   gap: var(--spacing-6);
   width: 100%;
   min-width: 0;
-  scroll-margin-top: 112px;
 }
 
 .contact__field {

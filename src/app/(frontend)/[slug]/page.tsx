@@ -65,7 +65,7 @@ export default async function PlaceholderPage({
           <a className="construction-header__explore" href="/">
             Explore
           </a>
-          <a className="construction-header__contact" href="/#contact-email">
+          <a className="construction-header__contact" href="/#contact">
             Contact
           </a>
         </div>
