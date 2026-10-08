@@ -7,6 +7,7 @@ import { CustomersCarousel } from './customers-carousel'
 import { bodyFont, displayFont } from './fonts'
 import { ProductCarousel } from './product-carousel'
 import { SiteHeader } from './site-header'
+import { SiteLogo } from './site-logo'
 import { sitePages } from './site-nav'
 import './styles.css'
 
@@ -52,10 +53,8 @@ export default function HomePage() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
       />
-      <SiteHeader bodyClassName={bodyFont.className}>
-        <a className="empty-stage__home" href="/">
-          <img alt="Forte" className="empty-stage__logo" height={44} src="/logo.svg" width={44} />
-        </a>
+      <SiteHeader bodyClassName={bodyFont.className} compactActions="past-hero">
+        <SiteLogo />
         <div className="empty-stage__actions">
           <nav aria-label="Primary" className={bodyFont.className}>
             <ul className="empty-stage__nav">

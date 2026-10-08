@@ -66,9 +66,25 @@ button {
 }
 
 .empty-stage__logo {
+  display: block;
+  position: relative;
   width: 44px;
   height: 44px;
   flex-shrink: 0;
+}
+
+.empty-stage__logo-mark {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+/* The light mark only ever shows over the transparent mobile bar, so it is
+   stacked on top of the dark one and revealed there rather than the reverse. */
+.empty-stage__logo-mark--light {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
 }
 
 .empty-stage__actions {
@@ -462,6 +478,18 @@ button {
     filter: brightness(0);
   }
 
+  /* Transparent bar: show the light mark. It fades back out in step with the
+     bar's own background (same 0.4s ease) once scrolled or opened. */
+  .empty-stage__logo-mark--light {
+    opacity: 1;
+    transition: opacity 0.4s ease;
+  }
+
+  .empty-stage__bar--scrolled .empty-stage__logo-mark--light,
+  .empty-stage__bar--open .empty-stage__logo-mark--light {
+    opacity: 0;
+  }
+
   @media (prefers-reduced-motion: reduce) {
     html {
       scroll-behavior: auto;
@@ -469,7 +497,8 @@ button {
 
     .empty-stage__bar,
     .empty-stage__bar::before,
-    .empty-stage__menu img {
+    .empty-stage__menu img,
+    .empty-stage__logo-mark--light {
       transition: none;
     }
   }
@@ -479,8 +508,44 @@ button {
     overflow: visible;
   }
 
+  .empty-stage__controls {
+    display: flex;
+    position: relative;
+    align-items: center;
+    justify-content: flex-end;
+    flex-shrink: 0;
+  }
+
   .empty-stage__toggle {
     display: block;
+  }
+
+  /* Over the hero only the hamburger exists; past it the Explore/Contact pair takes
+     over the flow and the toggle is parked on top of it, so the close button still
+     lands on the right edge once Explore expands the panel. */
+  .empty-stage__bar:not(.empty-stage__bar--compact) .empty-stage__compact {
+    display: none;
+  }
+
+  .empty-stage__bar--compact .empty-stage__toggle {
+    position: absolute;
+    top: 0;
+    right: 0;
+  }
+
+  .empty-stage__bar--compact .empty-stage__menu {
+    display: none;
+  }
+
+  /* Whichever trigger is on screen is hidden while the panel is open, so only the
+     close button remains. The timelines override this inline as they cross-fade;
+     the rule is what keeps a trigger from popping in at full opacity if the
+     compact threshold is crossed mid-animation. */
+  .empty-stage__bar--open .empty-stage__menu,
+  .empty-stage__bar--open .empty-stage__compact {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
   }
 
   .empty-stage__close {
@@ -1686,20 +1751,20 @@ button {
   letter-spacing: 0;
 }
 
-.construction-header__actions,
+.empty-stage__compact,
 .construction {
   display: none;
 }
 
-.construction-header__explore,
-.construction-header__contact,
+.empty-stage__explore,
+.empty-stage__contact-pill,
 .construction__return {
   text-decoration: none;
   white-space: nowrap;
 }
 
-.construction-header__explore:focus-visible,
-.construction-header__contact:focus-visible,
+.empty-stage__explore:focus-visible,
+.empty-stage__contact-pill:focus-visible,
 .construction__return:focus-visible,
 .construction__crumb a:focus-visible {
   outline: 2px solid var(--border-brand);
@@ -1707,33 +1772,34 @@ button {
 }
 
 @media (max-width: 767px) {
-  .construction-header__actions {
+  .empty-stage__compact {
     display: flex;
     align-items: center;
     gap: var(--spacing-2);
   }
 
-  .construction-header__explore,
-  .construction-header__contact {
+  .empty-stage__explore,
+  .empty-stage__contact-pill {
     display: inline-flex;
     align-items: center;
     justify-content: center;
     padding: 6px var(--spacing-5);
     border-radius: var(--radius-full);
+    font-family: inherit;
     font-size: var(--font-size-4xs);
     font-weight: var(--font-weight-medium);
     line-height: var(--font-line-height-4xs);
     cursor: pointer;
   }
 
-  .construction-header__explore {
+  .empty-stage__explore {
     border: 1px solid var(--border-brand);
     background: transparent;
     color: var(--text-brand);
     box-shadow: 0 1px 1px rgba(0, 0, 0, 0.05);
   }
 
-  .construction-header__contact {
+  .empty-stage__contact-pill {
     position: relative;
     overflow: hidden;
     border: 1px solid var(--color-base-white);
@@ -1745,7 +1811,7 @@ button {
     backdrop-filter: blur(10px);
   }
 
-  .construction-header__contact::before {
+  .empty-stage__contact-pill::before {
     content: '';
     position: absolute;
     inset: -1px;

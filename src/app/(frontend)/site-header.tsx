@@ -13,13 +13,14 @@ const MENU = '.empty-stage__menu'
 const CLOSE = '.empty-stage__close'
 const PANEL = '.empty-stage__panel'
 const PANEL_INNER = '.empty-stage__panel-inner'
+const COMPACT = '.empty-stage__compact'
 
 const closedClip = (hidden: number) => `inset(0px 0px ${hidden}px 0px round 12px)`
 
 /** Drops every inline property the open/close timelines write, so CSS owns the resting state. */
 function resetProps(root: HTMLElement) {
   root.style.removeProperty('clip-path')
-  gsap.set(root.querySelectorAll(`${MENU}, ${CLOSE}, ${PANEL_INNER}`), {
+  gsap.set(root.querySelectorAll(`${MENU}, ${CLOSE}, ${COMPACT}, ${PANEL_INNER}`), {
     clearProps: 'opacity,visibility,pointerEvents',
   })
 }
@@ -31,11 +32,18 @@ function prefersReducedMotion() {
 export function SiteHeader({
   bodyClassName,
   children,
+  compactActions = 'never',
   showMenu = true,
   solid = false,
 }: {
   bodyClassName: string
   children: React.ReactNode
+  /**
+   * Controls the mobile Explore/Contact pair, which replaces the hamburger:
+   * `past-hero` swaps them in once the bar clears the hero, `always` shows them
+   * on a page that has no hero to sit over.
+   */
+  compactActions?: 'never' | 'past-hero' | 'always'
   showMenu?: boolean
   solid?: boolean
 }) {
@@ -47,16 +55,36 @@ export function SiteHeader({
   // interpolate term-by-term against a longhand target and garble the corner radius.
   const clipRef = useRef({ hidden: 0 })
   const [scrolled, setScrolled] = useState(false)
+  const [pastHero, setPastHero] = useState(false)
   const [open, setOpen] = useState(false)
   const { contextSafe } = useGSAP({ scope: headerRef })
 
+  // `always` has no hero to measure against, so the compact pair is the resting state.
+  const compact = compactActions === 'always' || (compactActions === 'past-hero' && pastHero)
+
   useLayoutEffect(() => {
-    const update = () => setScrolled(window.scrollY > 0)
+    const update = () => {
+      setScrolled(window.scrollY > 0)
+
+      if (compactActions !== 'past-hero') return
+
+      const hero = document.querySelector('.hero')
+      // Measured against the bar row rather than the header, whose height changes
+      // while the panel is open and would flip this mid-animation.
+      const row = headerRef.current?.querySelector('.empty-stage__bar-row')
+      if (!hero || !row) return
+
+      setPastHero(hero.getBoundingClientRect().bottom <= row.getBoundingClientRect().bottom)
+    }
 
     update()
     window.addEventListener('scroll', update, { passive: true })
-    return () => window.removeEventListener('scroll', update)
-  }, [])
+    window.addEventListener('resize', update)
+    return () => {
+      window.removeEventListener('scroll', update)
+      window.removeEventListener('resize', update)
+    }
+  }, [compactActions])
 
   useLayoutEffect(() => {
     if (open) return
@@ -68,7 +96,7 @@ export function SiteHeader({
     if (!root) return
 
     resetProps(root)
-  }, [open])
+  }, [open, compact])
 
   /** Height the panel adds to the bar, measured now — never cached across an open/close cycle. */
   const measureHidden = (root: HTMLElement) =>
@@ -93,11 +121,14 @@ export function SiteHeader({
     const root = headerRef.current
     if (!root) return
 
+    // Whichever control is currently on screen is the one that animates out.
+    const trigger = compact ? COMPACT : MENU
+
     if (prefersReducedMotion()) {
       // Jump to the open end state. CSS parks the close button at
       // visibility: hidden, so without this it stays untappable.
       resetProps(root)
-      gsap.set(MENU, { autoAlpha: 0, pointerEvents: 'none' })
+      gsap.set(trigger, { autoAlpha: 0, pointerEvents: 'none' })
       gsap.set(CLOSE, { autoAlpha: 1, pointerEvents: 'auto' })
       return
     }
@@ -111,19 +142,19 @@ export function SiteHeader({
       writeClip(root)
       gsap.set(PANEL_INNER, { autoAlpha: 0 })
       gsap.set(CLOSE, { autoAlpha: 0 })
-      gsap.set(MENU, { autoAlpha: 1 })
+      gsap.set(trigger, { autoAlpha: 1 })
     }
 
     const timeline = gsap.timeline({ defaults: { ease: 'power2.inOut' } })
 
-    timeline.set(MENU, { pointerEvents: 'none' }, 0)
+    timeline.set(trigger, { pointerEvents: 'none' }, 0)
     timeline.set(CLOSE, { pointerEvents: 'none' }, 0)
     timeline.to(
       clipRef.current,
       { hidden: 0, duration: 0.42, ease: 'power2.out', onUpdate: () => writeClip(root) },
       0,
     )
-    timeline.to(MENU, { autoAlpha: 0, duration: 0.16, ease: 'power1.out' }, 0)
+    timeline.to(trigger, { autoAlpha: 0, duration: 0.16, ease: 'power1.out' }, 0)
     timeline.to(CLOSE, { autoAlpha: 1, duration: 0.2, ease: 'power1.out' }, 0.06)
     timeline.to(PANEL_INNER, { autoAlpha: 1, duration: 0.28, ease: 'power1.out' }, 0.1)
     timeline.set(CLOSE, { pointerEvents: 'auto' }, 0.16)
@@ -148,6 +179,7 @@ export function SiteHeader({
       return
     }
 
+    const trigger = compact ? COMPACT : MENU
     const hidden = measureHidden(root)
 
     const timeline = gsap.timeline({
@@ -155,7 +187,7 @@ export function SiteHeader({
       onComplete: () => setOpen(false),
     })
 
-    timeline.set(MENU, { pointerEvents: 'none' }, 0)
+    timeline.set(trigger, { pointerEvents: 'none' }, 0)
     timeline.set(CLOSE, { pointerEvents: 'none' }, 0)
     // `power1.in` keeps the links readable while the collapsing edge eats into them,
     // instead of emptying the panel and leaving a bare white block behind.
@@ -166,10 +198,10 @@ export function SiteHeader({
       { hidden, duration: 0.32, onUpdate: () => writeClip(root) },
       0.04,
     )
-    timeline.to(MENU, { autoAlpha: 1, duration: 0.2, ease: 'power1.out' }, 0.12)
-    // Re-arm the hamburger as soon as it is visible, so a tap during the collapse
+    timeline.to(trigger, { autoAlpha: 1, duration: 0.2, ease: 'power1.out' }, 0.12)
+    // Re-arm the trigger as soon as it is visible, so a tap during the collapse
     // reopens from wherever the clip currently is instead of being swallowed.
-    timeline.set(MENU, { pointerEvents: 'auto' }, 0.2)
+    timeline.set(trigger, { pointerEvents: 'auto' }, 0.2)
 
     timelineRef.current = timeline
   })
@@ -189,6 +221,7 @@ export function SiteHeader({
     'empty-stage__bar',
     solid || scrolled ? 'empty-stage__bar--scrolled' : '',
     open ? 'empty-stage__bar--open' : '',
+    compact ? 'empty-stage__bar--compact' : '',
   ]
     .filter(Boolean)
     .join(' ')
@@ -197,21 +230,54 @@ export function SiteHeader({
     <header className={className} ref={headerRef}>
       <div className="empty-stage__bar-row">
         {children}
-        {showMenu ? (
-          <div className="empty-stage__toggle">
-            <button
-              aria-controls="mobile-menu"
-              aria-expanded={open}
-              aria-label="Menu"
-              className="empty-stage__menu"
-              type="button"
-              onClick={openMenu}
-            >
-              <img alt="" height={24} src="/hamburger-icon.svg" width={24} />
-            </button>
-            <button aria-label="Close" className="empty-stage__close" type="button" onClick={closeMenu}>
-              <img alt="" height={20} src="/x-close.svg" width={20} />
-            </button>
+        {showMenu || compactActions !== 'never' ? (
+          <div className="empty-stage__controls">
+            {showMenu ? (
+              <div className="empty-stage__toggle">
+                <button
+                  aria-controls="mobile-menu"
+                  aria-expanded={open}
+                  aria-label="Menu"
+                  className="empty-stage__menu"
+                  type="button"
+                  onClick={openMenu}
+                >
+                  <img alt="" height={24} src="/hamburger-icon.svg" width={24} />
+                </button>
+                <button
+                  aria-label="Close"
+                  className="empty-stage__close"
+                  type="button"
+                  onClick={closeMenu}
+                >
+                  <img alt="" height={20} src="/x-close.svg" width={20} />
+                </button>
+              </div>
+            ) : null}
+            {compactActions !== 'never' ? (
+              <div className={`empty-stage__compact ${bodyClassName}`}>
+                {/* With a menu to open, Explore is that trigger; without one there is
+                    no panel to expand, so it stays a plain link home. */}
+                {showMenu ? (
+                  <button
+                    aria-controls="mobile-menu"
+                    aria-expanded={open}
+                    className="empty-stage__explore"
+                    type="button"
+                    onClick={openMenu}
+                  >
+                    Explore
+                  </button>
+                ) : (
+                  <a className="empty-stage__explore" href="/">
+                    Explore
+                  </a>
+                )}
+                <a className="empty-stage__contact-pill" href="/#contact">
+                  Contact
+                </a>
+              </div>
+            ) : null}
           </div>
         ) : null}
       </div>

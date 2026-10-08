@@ -4,6 +4,7 @@ import React from 'react'
 
 import { bodyFont, displayFont } from '../fonts'
 import { SiteHeader } from '../site-header'
+import { SiteLogo } from '../site-logo'
 import { getSitePage, sitePages } from '../site-nav'
 import '../styles.css'
 
@@ -43,10 +44,13 @@ export default async function PlaceholderPage({
 
   return (
     <div className={`empty-stage empty-stage--fit ${displayFont.className}`}>
-      <SiteHeader bodyClassName={bodyFont.className} showMenu={false} solid>
-        <a className="empty-stage__home" href="/">
-          <img alt="Forte" className="empty-stage__logo" height={44} src="/logo.svg" width={44} />
-        </a>
+      <SiteHeader
+        bodyClassName={bodyFont.className}
+        compactActions="always"
+        showMenu={false}
+        solid
+      >
+        <SiteLogo />
         <div className="empty-stage__actions">
           <nav aria-label="Primary" className={bodyFont.className}>
             <ul className="empty-stage__nav">
@@ -60,14 +64,6 @@ export default async function PlaceholderPage({
           <button className={`empty-stage__contact ${bodyFont.className}`} disabled type="button">
             Contact Us
           </button>
-        </div>
-        <div className={`construction-header__actions ${bodyFont.className}`}>
-          <a className="construction-header__explore" href="/">
-            Explore
-          </a>
-          <a className="construction-header__contact" href="/#contact">
-            Contact
-          </a>
         </div>
       </SiteHeader>
       <section className="construction">
