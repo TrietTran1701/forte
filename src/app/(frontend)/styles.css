@@ -974,7 +974,7 @@ button {
 
 .product-carousel__caption-track {
   display: flex;
-  align-items: flex-start;
+  align-items: flex-end;
   width: max-content;
   max-width: none;
   min-width: 0;

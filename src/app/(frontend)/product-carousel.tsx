@@ -12,9 +12,17 @@ const SLIDE_SECONDS = 0.5
 const DRAG_THRESHOLD = 48
 const CAPTION_FRAME = 375
 const CAPTION_ACTIVE = { width: 293, height: 120 }
-const CAPTION_INACTIVE = { width: 242, height: 99, y: 21 }
+// The design's inactive y-offset of 21 is `120 - 99`, i.e. a bottom-aligned card, so the
+// panel's `align-items: flex-end` supplies it instead of a tweened margin.
+const CAPTION_INACTIVE = { width: 242, height: 99 }
 const CAPTION_GAP = 12
 const CAPTION_INSET = 41
+/**
+ * The inactive card is a uniform shrink of the active one (242/293 and 99/120 agree to
+ * within 0.1%), so the state change is a transform. Tweening width/height instead would
+ * re-wrap the text mid-animation.
+ */
+const CAPTION_SCALE = CAPTION_INACTIVE.width / CAPTION_ACTIVE.width
 
 type ProductSlide = {
   src: string
@@ -86,13 +94,24 @@ export function ProductCarousel({ bodyClassName }: { bodyClassName: string }) {
       const scale = width / CAPTION_FRAME
       return {
         activeW: CAPTION_ACTIVE.width * scale,
-        inactiveW: CAPTION_INACTIVE.width * scale,
         activeH: CAPTION_ACTIVE.height * scale,
-        inactiveH: CAPTION_INACTIVE.height * scale,
-        inactiveY: CAPTION_INACTIVE.y * scale,
         gap: CAPTION_GAP * scale,
         inset: CAPTION_INSET * scale,
       }
+    }
+
+    /**
+     * Every caption is laid out at its active size and left there, so the text wraps once
+     * and never again. Returns the frame height: the wordiest slide's content height.
+     */
+    const layoutCaptions = (metrics: NonNullable<ReturnType<typeof captionMetrics>>) => {
+      let tallest = 0
+      captions.forEach((caption) => {
+        caption.style.width = `${metrics.activeW}px`
+        caption.style.height = 'auto'
+        tallest = Math.max(tallest, caption.offsetHeight)
+      })
+      return tallest || metrics.activeH
     }
 
     const placeCaptions = (index: number, duration: number) => {
@@ -101,18 +120,20 @@ export function ProductCarousel({ bodyClassName }: { bodyClassName: string }) {
 
       captionTrack.style.gap = `${metrics.gap}px`
       captionTrack.style.paddingLeft = `${metrics.inset}px`
-      captionViewport.style.height = `${metrics.activeH}px`
+
+      // The frame hugs the wordiest slide so the baseline under the photo, the nav
+      // buttons and the section height never shift between slides.
+      captionViewport.style.height = `${layoutCaptions(metrics)}px`
+
       gsap.to(captions, {
-        width: (i: number) => (i === index ? metrics.activeW : metrics.inactiveW),
-        height: (i: number) => (i === index ? metrics.activeH : metrics.inactiveH),
-        marginTop: (i: number) => (i === index ? 0 : metrics.inactiveY),
+        scale: (i: number) => (i === index ? 1 : CAPTION_SCALE),
         opacity: (i: number) => (i === index ? 1 : 0),
         duration,
         ease: EASE_IN_OUT,
         overwrite: 'auto',
       })
       gsap.to(captionTrack, {
-        x: -index * (metrics.inactiveW + metrics.gap),
+        x: -index * (metrics.activeW + metrics.gap),
         duration,
         ease: EASE_IN_OUT,
         overwrite: 'auto',
@@ -123,7 +144,7 @@ export function ProductCarousel({ bodyClassName }: { bodyClassName: string }) {
       const metrics = captionMetrics()
       const photoStep = step()
       if (!metrics || !photoStep) return 0
-      return photoX * ((metrics.inactiveW + metrics.gap) / photoStep)
+      return photoX * ((metrics.activeW + metrics.gap) / photoStep)
     }
 
     const playback = {
@@ -146,6 +167,8 @@ export function ProductCarousel({ bodyClassName }: { bodyClassName: string }) {
     })
 
     goToRef.current = playback.goTo
+    // Scale from the baseline the card shares with the nav buttons, so it grows upward.
+    gsap.set(captions, { transformOrigin: 'center bottom' })
     placeCaptions(0, 0)
 
     const viewport = root.querySelector<HTMLElement>('.product-carousel__viewport')
