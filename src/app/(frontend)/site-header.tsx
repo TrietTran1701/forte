@@ -9,6 +9,25 @@ import { sitePages } from './site-nav'
 
 gsap.registerPlugin(useGSAP)
 
+const MENU = '.empty-stage__menu'
+const CLOSE = '.empty-stage__close'
+const PANEL = '.empty-stage__panel'
+const PANEL_INNER = '.empty-stage__panel-inner'
+
+const closedClip = (hidden: number) => `inset(0px 0px ${hidden}px 0px round 12px)`
+
+/** Drops every inline property the open/close timelines write, so CSS owns the resting state. */
+function resetProps(root: HTMLElement) {
+  root.style.removeProperty('clip-path')
+  gsap.set(root.querySelectorAll(`${MENU}, ${CLOSE}, ${PANEL_INNER}`), {
+    clearProps: 'opacity,visibility,pointerEvents',
+  })
+}
+
+function prefersReducedMotion() {
+  return window.matchMedia('(prefers-reduced-motion: reduce)').matches
+}
+
 export function SiteHeader({
   bodyClassName,
   children,
@@ -23,6 +42,10 @@ export function SiteHeader({
   const headerRef = useRef<HTMLElement>(null)
   const timelineRef = useRef<gsap.core.Timeline | null>(null)
   const openRef = useRef(false)
+  // The clip is driven through this proxy instead of tweening the `clip-path` string:
+  // the browser reports the computed value in shorthand form, which GSAP would
+  // interpolate term-by-term against a longhand target and garble the corner radius.
+  const clipRef = useRef({ hidden: 0 })
   const [scrolled, setScrolled] = useState(false)
   const [open, setOpen] = useState(false)
   const { contextSafe } = useGSAP({ scope: headerRef })
@@ -44,74 +67,111 @@ export function SiteHeader({
     const root = headerRef.current
     if (!root) return
 
-    gsap.set(root, { clearProps: 'clipPath' })
-    gsap.set(root.querySelectorAll('.empty-stage__menu, .empty-stage__close, .empty-stage__panel-inner'), {
-      clearProps: 'opacity,visibility',
-    })
+    resetProps(root)
   }, [open])
+
+  /** Height the panel adds to the bar, measured now — never cached across an open/close cycle. */
+  const measureHidden = (root: HTMLElement) =>
+    (root.querySelector(PANEL) as HTMLElement | null)?.offsetHeight ?? 0
+
+  const writeClip = (root: HTMLElement) => {
+    root.style.clipPath = closedClip(clipRef.current.hidden)
+  }
 
   const openMenu = contextSafe(() => {
     if (openRef.current) return
 
-    const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    // Closing but not finished yet: `open` is still true, so there is nothing to mount.
+    const fromClosed = !open
 
-    const rootBefore = headerRef.current
-    const closedHeight = rootBefore?.offsetHeight ?? 70
+    openRef.current = true
+    if (fromClosed) flushSync(() => setOpen(true))
 
-    flushSync(() => {
-      openRef.current = true
-      setOpen(true)
-    })
+    timelineRef.current?.kill()
+    timelineRef.current = null
 
     const root = headerRef.current
-    if (!root || reducedMotion) return
+    if (!root) return
 
-    const hidden = Math.max(root.offsetHeight - closedHeight, 0)
+    if (prefersReducedMotion()) {
+      // Jump to the open end state. CSS parks the close button at
+      // visibility: hidden, so without this it stays untappable.
+      resetProps(root)
+      gsap.set(MENU, { autoAlpha: 0, pointerEvents: 'none' })
+      gsap.set(CLOSE, { autoAlpha: 1, pointerEvents: 'auto' })
+      return
+    }
+
+    const hidden = measureHidden(root)
+
+    // Coming from rest, CSS has no inline values to tween from; coming from an
+    // interrupted close, the current inline values are the right starting point.
+    if (fromClosed) {
+      clipRef.current.hidden = hidden
+      writeClip(root)
+      gsap.set(PANEL_INNER, { autoAlpha: 0 })
+      gsap.set(CLOSE, { autoAlpha: 0 })
+      gsap.set(MENU, { autoAlpha: 1 })
+    }
+
     const timeline = gsap.timeline({ defaults: { ease: 'power2.inOut' } })
 
-    timeline.set('.empty-stage__menu', { pointerEvents: 'none' }, 0)
-    timeline.set('.empty-stage__close', { pointerEvents: 'none' }, 0)
-    timeline.fromTo(
-      root,
-      { clipPath: `inset(0px 0px ${hidden}px 0px round 12px)` },
-      { clipPath: 'inset(0px 0px 0px 0px round 12px)', duration: 0.42, ease: 'power2.out' },
+    timeline.set(MENU, { pointerEvents: 'none' }, 0)
+    timeline.set(CLOSE, { pointerEvents: 'none' }, 0)
+    timeline.to(
+      clipRef.current,
+      { hidden: 0, duration: 0.42, ease: 'power2.out', onUpdate: () => writeClip(root) },
       0,
     )
-    timeline.to('.empty-stage__menu', { autoAlpha: 0, duration: 0.16, ease: 'power1.out' }, 0)
-    timeline.fromTo(
-      '.empty-stage__close',
-      { autoAlpha: 0 },
-      { autoAlpha: 1, duration: 0.2, ease: 'power1.out' },
-      0.06,
-    )
-    timeline.fromTo(
-      '.empty-stage__panel-inner',
-      { autoAlpha: 0 },
-      { autoAlpha: 1, duration: 0.28, ease: 'power1.out' },
-      0.1,
-    )
-    timeline.set('.empty-stage__close', { pointerEvents: 'auto' }, 0.16)
+    timeline.to(MENU, { autoAlpha: 0, duration: 0.16, ease: 'power1.out' }, 0)
+    timeline.to(CLOSE, { autoAlpha: 1, duration: 0.2, ease: 'power1.out' }, 0.06)
+    timeline.to(PANEL_INNER, { autoAlpha: 1, duration: 0.28, ease: 'power1.out' }, 0.1)
+    timeline.set(CLOSE, { pointerEvents: 'auto' }, 0.16)
 
     timelineRef.current = timeline
   })
 
+  // Built as its own forward timeline rather than reversing the open one: reversing
+  // also reverses the easing (making the collapse stall for most of its duration)
+  // and the ordering (leaving an empty panel on screen after the links have gone).
   const closeMenu = contextSafe(() => {
     if (!openRef.current) return
 
-    const timeline = timelineRef.current
-    const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    openRef.current = false
 
-    if (!timeline || reducedMotion) {
-      openRef.current = false
+    timelineRef.current?.kill()
+    timelineRef.current = null
+
+    const root = headerRef.current
+    if (!root || prefersReducedMotion()) {
       setOpen(false)
       return
     }
 
-    timeline.eventCallback('onReverseComplete', () => {
-      openRef.current = false
-      setOpen(false)
+    const hidden = measureHidden(root)
+
+    const timeline = gsap.timeline({
+      defaults: { ease: 'power2.inOut' },
+      onComplete: () => setOpen(false),
     })
-    timeline.reverse()
+
+    timeline.set(MENU, { pointerEvents: 'none' }, 0)
+    timeline.set(CLOSE, { pointerEvents: 'none' }, 0)
+    // `power1.in` keeps the links readable while the collapsing edge eats into them,
+    // instead of emptying the panel and leaving a bare white block behind.
+    timeline.to(PANEL_INNER, { autoAlpha: 0, duration: 0.26, ease: 'power1.in' }, 0)
+    timeline.to(CLOSE, { autoAlpha: 0, duration: 0.14, ease: 'power1.out' }, 0)
+    timeline.to(
+      clipRef.current,
+      { hidden, duration: 0.32, onUpdate: () => writeClip(root) },
+      0.04,
+    )
+    timeline.to(MENU, { autoAlpha: 1, duration: 0.2, ease: 'power1.out' }, 0.12)
+    // Re-arm the hamburger as soon as it is visible, so a tap during the collapse
+    // reopens from wherever the clip currently is instead of being swallowed.
+    timeline.set(MENU, { pointerEvents: 'auto' }, 0.2)
+
+    timelineRef.current = timeline
   })
 
   useLayoutEffect(() => {
