@@ -4,12 +4,15 @@ import { useGSAP } from '@gsap/react'
 import gsap from 'gsap'
 import React, { useRef, useState } from 'react'
 
+import { EASE_IN_OUT, EASE_INDICATOR } from './eases'
+
 gsap.registerPlugin(useGSAP)
 
-const PROGRESS_SECONDS = 5
-const SLIDE_SECONDS = 0.6
+const PROGRESS_SECONDS = 2
+const SLIDE_SECONDS = 0.5
 const DRAG_THRESHOLD = 48
-const INDICATOR_FILL_WIDTH = 82
+const INDICATOR_FILL_START = 1
+const INDICATOR_FILL_WIDTH = 80
 
 type FeatureSlide = {
   src: string
@@ -77,7 +80,7 @@ export function CardCarousel({ bodyClassName }: { bodyClassName: string }) {
     const resetFills = () => {
       fills().forEach((fill) => {
         gsap.killTweensOf(fill)
-        gsap.set(fill, { width: 0 })
+        gsap.set(fill, { width: INDICATOR_FILL_START })
       })
     }
 
@@ -97,7 +100,7 @@ export function CardCarousel({ bodyClassName }: { bodyClassName: string }) {
       progressTween = gsap.to(fill, {
         width: INDICATOR_FILL_WIDTH,
         duration: PROGRESS_SECONDS,
-        ease: 'none',
+        ease: EASE_INDICATOR,
         onComplete: () => playback.goTo(index + 1),
       })
       syncPause()
@@ -116,7 +119,7 @@ export function CardCarousel({ bodyClassName }: { bodyClassName: string }) {
         slideTween = gsap.to(track, {
           x: -animateTo * step(),
           duration: reducedMotion ? 0 : SLIDE_SECONDS,
-          ease: 'power2.inOut',
+          ease: EASE_IN_OUT,
           overwrite: 'auto',
           onComplete: () => {
             if (jumpTo != null) gsap.set(track, { x: -jumpTo * step() })
@@ -176,7 +179,7 @@ export function CardCarousel({ bodyClassName }: { bodyClassName: string }) {
       slideTween = gsap.to(track, {
         x: -indexRef.current * step(),
         duration: reducedMotion ? 0 : 0.45,
-        ease: 'power2.out',
+        ease: EASE_IN_OUT,
         overwrite: 'auto',
       })
       syncPause()

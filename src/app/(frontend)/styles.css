@@ -506,11 +506,20 @@ button {
     width: 100%;
     max-width: 100vw;
     min-width: 0;
-    height: 100vh;
+    /* svh only: vh tracks the dynamic viewport in some mobile engines, so the
+       hero box would resize when the browser chrome collapses on scroll and the
+       object-fit: cover image would appear to zoom. */
     height: 100svh;
     min-height: 0;
     max-height: 100svh;
     aspect-ratio: auto;
+  }
+
+  @supports not (height: 100svh) {
+    .hero {
+      height: 100vh;
+      max-height: 100vh;
+    }
   }
 
   .hero__copy {
@@ -966,7 +975,11 @@ button {
   margin: 0;
   opacity: 0;
   pointer-events: none;
-  transition: opacity 0.3s ease;
+  transform: translateY(21px) scale(0.826);
+  transform-origin: top center;
+  transition:
+    opacity 0.5s ease-in-out,
+    transform 0.5s ease-in-out;
   padding: var(--spacing-4);
   border-radius: 20px;
   background: var(--surface-bg);
@@ -979,6 +992,7 @@ button {
 
 .product-carousel__caption--active {
   opacity: 1;
+  transform: translateY(0) scale(1);
   pointer-events: auto;
 }
 
@@ -1005,6 +1019,7 @@ button {
     inset 0 -1px 0 rgba(255, 255, 255, 0.15),
     inset 0 1px 4px rgba(0, 0, 0, 0.05);
   cursor: pointer;
+  transition: color 0.5s ease-in-out;
 }
 
 .product-carousel__nav--prev {
