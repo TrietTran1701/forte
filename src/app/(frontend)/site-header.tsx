@@ -54,6 +54,8 @@ export function SiteHeader({
   // the browser reports the computed value in shorthand form, which GSAP would
   // interpolate term-by-term against a longhand target and garble the corner radius.
   const clipRef = useRef({ hidden: 0 })
+  const swapRef = useRef<gsap.core.Timeline | null>(null)
+  const prevCompactRef = useRef<boolean | null>(null)
   const [scrolled, setScrolled] = useState(false)
   const [pastHero, setPastHero] = useState(false)
   const [open, setOpen] = useState(false)
@@ -98,6 +100,53 @@ export function SiteHeader({
     resetProps(root)
   }, [open, compact])
 
+  // Cross-fades the hamburger and the Explore/Contact pair when the compact
+  // threshold is crossed. Done in GSAP rather than a CSS transition because the
+  // panel timelines write inline opacity on these same elements, and a transition
+  // would stretch those fades too.
+  useLayoutEffect(() => {
+    const previous = prevCompactRef.current
+    prevCompactRef.current = compact
+
+    // Nothing to animate from on first paint, and while the panel is open the
+    // open/close timelines own both triggers.
+    if (previous === null || previous === compact || open) return
+
+    const root = headerRef.current
+    if (!root) return
+
+    const incoming = root.querySelector<HTMLElement>(compact ? COMPACT : MENU)
+    const outgoing = root.querySelector<HTMLElement>(compact ? MENU : COMPACT)
+    if (!incoming || !outgoing) return
+
+    swapRef.current?.kill()
+
+    if (prefersReducedMotion()) {
+      swapRef.current = null
+      resetProps(root)
+      return
+    }
+
+    swapRef.current = gsap
+      .timeline({
+        // Hand the resting state back to the per-mode CSS rules.
+        onComplete: () => {
+          gsap.set([incoming, outgoing], { clearProps: 'opacity,visibility,pointerEvents' })
+        },
+      })
+      .set(outgoing, { pointerEvents: 'none' }, 0)
+      // Both ends need explicit start values: React has already applied the new
+      // mode's class, so the computed opacity of each is whatever CSS says it
+      // should end up as, not what it is still being seen at.
+      .fromTo(outgoing, { autoAlpha: 1 }, { autoAlpha: 0, duration: 0.18, ease: 'power1.out' }, 0)
+      .fromTo(
+        incoming,
+        { autoAlpha: 0 },
+        { autoAlpha: 1, duration: 0.24, ease: 'power1.out' },
+        0.08,
+      )
+  }, [compact, open])
+
   /** Height the panel adds to the bar, measured now — never cached across an open/close cycle. */
   const measureHidden = (root: HTMLElement) =>
     (root.querySelector(PANEL) as HTMLElement | null)?.offsetHeight ?? 0
@@ -115,6 +164,10 @@ export function SiteHeader({
     openRef.current = true
     if (fromClosed) flushSync(() => setOpen(true))
 
+    // A mode cross-fade in flight would fight the panel timeline over the same
+    // opacity, so the panel takes over.
+    swapRef.current?.kill()
+    swapRef.current = null
     timelineRef.current?.kill()
     timelineRef.current = null
 
@@ -170,6 +223,8 @@ export function SiteHeader({
 
     openRef.current = false
 
+    swapRef.current?.kill()
+    swapRef.current = null
     timelineRef.current?.kill()
     timelineRef.current = null
 
