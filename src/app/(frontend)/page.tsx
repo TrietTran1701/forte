@@ -1,25 +1,16 @@
-import { Google_Sans_Flex, Wix_Madefor_Display } from 'next/font/google'
 import React from 'react'
 
 import { getSiteUrl, siteDescription, siteHeadline, siteName, siteTitle } from '@/lib/site'
 
 import { CardCarousel } from './card-carousel'
 import { CustomersCarousel } from './customers-carousel'
+import { bodyFont, displayFont } from './fonts'
 import { ProductCarousel } from './product-carousel'
 import { SiteHeader } from './site-header'
+import { sitePages } from './site-nav'
 import './styles.css'
 
-const bodyFont = Google_Sans_Flex({
-  subsets: ['latin'],
-  weight: ['400', '500', '600'],
-})
-
-const displayFont = Wix_Madefor_Display({
-  subsets: ['latin'],
-  weight: ['400', '500', '600'],
-})
-
-const navItems = ['Products', 'Applications', 'Technology', 'About Us']
+const desktopNav = sitePages.filter((page) => page.slug !== 'contact')
 
 const siteUrl = getSiteUrl()
 
@@ -62,12 +53,16 @@ export default function HomePage() {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
       />
       <SiteHeader bodyClassName={bodyFont.className}>
-        <img alt="Forte" className="empty-stage__logo" height={44} src="/logo.svg" width={44} />
+        <a className="empty-stage__home" href="/">
+          <img alt="Forte" className="empty-stage__logo" height={44} src="/logo.svg" width={44} />
+        </a>
         <div className="empty-stage__actions">
           <nav aria-label="Primary" className={bodyFont.className}>
             <ul className="empty-stage__nav">
-              {navItems.map((item) => (
-                <li key={item}>{item}</li>
+              {desktopNav.map((page) => (
+                <li key={page.slug}>
+                  <a href={`/${page.slug}`}>{page.label}</a>
+                </li>
               ))}
             </ul>
           </nav>
@@ -89,9 +84,9 @@ export default function HomePage() {
             <h1>{siteHeadline}</h1>
             <p className={bodyFont.className}>{siteDescription}</p>
           </div>
-          <button className={`hero__cta ${bodyFont.className}`} type="button">
+          <a className={`hero__cta ${bodyFont.className}`} href="#contact-email">
             Get a Demo
-          </button>
+          </a>
         </div>
       </section>
       <section aria-labelledby="about-heading" className="about">
@@ -168,7 +163,7 @@ export default function HomePage() {
               <li>Expert support</li>
             </ul>
           </div>
-          <div className={`contact__form ${bodyFont.className}`}>
+          <div className={`contact__form ${bodyFont.className}`} id="contact-email">
             <label className="contact__field">
               <img alt="" className="contact__mail" height={20} src="/mail.svg" width={20} />
               <input aria-label="Work email address" placeholder="Work email address" type="email" />

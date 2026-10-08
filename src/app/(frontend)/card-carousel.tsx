@@ -20,20 +20,20 @@ type FeatureSlide = {
 
 const featureSlides: FeatureSlide[] = [
   {
-    src: '/images/Product%201.png',
-    alt: 'Forte dashboard showing the connected drone fleet',
+    src: '/images/Key%201.png',
+    alt: 'Drone fleet over a warehouse with live feed, patrol route, and fleet status',
     title: 'Rapid Deployment',
     description: 'Deliver highly effective, easy-to-deploy drone security solutions',
   },
   {
-    src: '/images/Product%202.png',
-    alt: 'Forte operations console during a perimeter breach',
+    src: '/images/Key%202.png',
+    alt: 'Drone launching from a dock with site-ready checks and an auto-patrol route',
     title: 'Monitor Continuously',
     description: 'Enable continuous surveillance with minimal human error or delay',
   },
   {
-    src: '/images/Product%203.png',
-    alt: 'Forte monitor with live patrol routes and fleet status',
+    src: '/images/Key%203.png',
+    alt: 'Operator reviewing live drone feeds, alert trends, and operational efficiency',
     title: 'Lower Operating Costs',
     description: 'Reduce operational costs while improving safety and visibility',
   },

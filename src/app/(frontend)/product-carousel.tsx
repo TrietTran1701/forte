@@ -8,6 +8,7 @@ gsap.registerPlugin(useGSAP)
 
 const SLIDE_SECONDS = 0.6
 const DRAG_THRESHOLD = 48
+const INACTIVE_SCALE = 0.88
 
 type ProductSlide = {
   src: string
@@ -66,14 +67,32 @@ export function ProductCarousel({ bodyClassName }: { bodyClassName: string }) {
       return (card?.offsetWidth || 0) + gap
     }
 
+    const cards = gsap.utils.toArray<HTMLElement>('.product-carousel__card', track)
+
     const playback = {
       goTo: (_next: number) => {},
     }
+
+    const zoomTo = contextSafe((index: number) => {
+      gsap.to(cards, {
+        scale: (i: number) => (i === index ? 1 : INACTIVE_SCALE),
+        opacity: (i: number) => (i === index ? 1 : 0.55),
+        duration: reducedMotion ? 0 : SLIDE_SECONDS,
+        ease: 'power2.inOut',
+        overwrite: 'auto',
+      })
+    })
+
+    gsap.set(cards, {
+      scale: (i: number) => (i === 0 ? 1 : INACTIVE_SCALE),
+      opacity: (i: number) => (i === 0 ? 1 : 0.55),
+    })
 
     playback.goTo = contextSafe((next: number) => {
       const index = Math.max(0, Math.min(lastIndex, next))
       indexRef.current = index
       setActiveIndex(index)
+      zoomTo(index)
       slideTween?.kill()
       slideTween = gsap.to(track, {
         x: -index * step(),
@@ -204,10 +223,17 @@ export function ProductCarousel({ bodyClassName }: { bodyClassName: string }) {
         >
           <Chevron direction="left" />
         </button>
-        <p aria-live="polite" className="product-carousel__caption">
-          <span className="product-carousel__label">{productSlides[activeIndex].title}</span>{' '}
-          {productSlides[activeIndex].description}
-        </p>
+        <div aria-live="polite" className="product-carousel__captions">
+          {productSlides.map((slide, index) => (
+            <p
+              aria-hidden={index !== activeIndex}
+              className={`product-carousel__caption${index === activeIndex ? ' product-carousel__caption--active' : ''}`}
+              key={slide.title}
+            >
+              <span className="product-carousel__label">{slide.title}</span> {slide.description}
+            </p>
+          ))}
+        </div>
         <button
           aria-label="Next product"
           className="product-carousel__nav product-carousel__nav--next"

@@ -5,16 +5,20 @@ import gsap from 'gsap'
 import React, { useLayoutEffect, useRef, useState } from 'react'
 import { flushSync } from 'react-dom'
 
-gsap.registerPlugin(useGSAP)
+import { sitePages } from './site-nav'
 
-const menuItems = ['Products', 'Applications', 'Technology', 'About Us', 'Contact Us']
+gsap.registerPlugin(useGSAP)
 
 export function SiteHeader({
   bodyClassName,
   children,
+  showMenu = true,
+  solid = false,
 }: {
   bodyClassName: string
   children: React.ReactNode
+  showMenu?: boolean
+  solid?: boolean
 }) {
   const headerRef = useRef<HTMLElement>(null)
   const timelineRef = useRef<gsap.core.Timeline | null>(null)
@@ -123,7 +127,8 @@ export function SiteHeader({
 
   const className = [
     'empty-stage__bar',
-    open ? 'empty-stage__bar--open' : scrolled ? 'empty-stage__bar--scrolled' : '',
+    solid || scrolled ? 'empty-stage__bar--scrolled' : '',
+    open ? 'empty-stage__bar--open' : '',
   ]
     .filter(Boolean)
     .join(' ')
@@ -132,31 +137,37 @@ export function SiteHeader({
     <header className={className} ref={headerRef}>
       <div className="empty-stage__bar-row">
         {children}
-        <div className="empty-stage__toggle">
-          <button
-            aria-controls="mobile-menu"
-            aria-expanded={open}
-            aria-label="Menu"
-            className="empty-stage__menu"
-            type="button"
-            onClick={openMenu}
-          >
-            <img alt="" height={24} src="/hamburger-icon.svg" width={24} />
-          </button>
-          <button aria-label="Close" className="empty-stage__close" type="button" onClick={closeMenu}>
-            <img alt="" height={20} src="/x-close.svg" width={20} />
-          </button>
-        </div>
+        {showMenu ? (
+          <div className="empty-stage__toggle">
+            <button
+              aria-controls="mobile-menu"
+              aria-expanded={open}
+              aria-label="Menu"
+              className="empty-stage__menu"
+              type="button"
+              onClick={openMenu}
+            >
+              <img alt="" height={24} src="/hamburger-icon.svg" width={24} />
+            </button>
+            <button aria-label="Close" className="empty-stage__close" type="button" onClick={closeMenu}>
+              <img alt="" height={20} src="/x-close.svg" width={20} />
+            </button>
+          </div>
+        ) : null}
       </div>
-      <nav aria-label="Mobile" className="empty-stage__panel" id="mobile-menu">
-        <div className={`empty-stage__panel-inner ${bodyClassName}`}>
-          <ul>
-            {menuItems.map((item) => (
-              <li key={item}>{item}</li>
-            ))}
-          </ul>
-        </div>
-      </nav>
+      {showMenu ? (
+        <nav aria-label="Mobile" className="empty-stage__panel" id="mobile-menu">
+          <div className={`empty-stage__panel-inner ${bodyClassName}`}>
+            <ul>
+              {sitePages.map((page) => (
+                <li key={page.slug}>
+                  <a href={`/${page.slug}`}>{page.label}</a>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </nav>
+      ) : null}
     </header>
   )
 }
