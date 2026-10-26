@@ -3,6 +3,12 @@ import { notFound } from 'next/navigation'
 import React from 'react'
 
 import { bodyFont, displayFont } from '../fonts'
+import { HeroFit } from '../hero-fit'
+import { ProductHero } from '../product-hero'
+import { SoftwareSection } from '../software-section'
+import { HardwareSection } from '../hardware-section'
+import { ProductContact } from '../product-contact'
+import { SiteFooter } from '../site-footer'
 import { SiteHeader } from '../site-header'
 import { SiteLogo } from '../site-logo'
 import { getSitePage, sitePages } from '../site-nav'
@@ -26,7 +32,10 @@ export async function generateMetadata({
 
   return {
     title: page.crumb,
-    description: 'We’re working on something great. Please check back later.',
+    description:
+      slug === 'products'
+        ? 'Intelligent mission control, autonomous drones, and wireless charging. Designed to work together.'
+        : 'We’re working on something great. Please check back later.',
   }
 }
 
@@ -41,14 +50,16 @@ export default async function PlaceholderPage({
   if (!page) notFound()
 
   const desktopNav = sitePages.filter((item) => item.slug !== 'contact')
+  const isProducts = slug === 'products'
 
   return (
-    <div className={`empty-stage empty-stage--fit ${displayFont.className}`}>
+    <div className={`empty-stage${isProducts ? '' : ' empty-stage--fit'} ${displayFont.className}`}>
+      {isProducts ? <HeroFit /> : null}
       <SiteHeader
         bodyClassName={bodyFont.className}
-        compactActions="always"
-        showMenu={false}
-        solid
+        compactActions={isProducts ? 'past-hero' : 'always'}
+        showMenu={isProducts}
+        solid={!isProducts}
       >
         <SiteLogo />
         <div className="empty-stage__actions">
@@ -66,33 +77,39 @@ export default async function PlaceholderPage({
           </button>
         </div>
       </SiteHeader>
-      <section className="construction">
-        <nav aria-label="Breadcrumb" className={`construction__crumb ${bodyFont.className}`}>
-          <a href="/">Home</a>
-          <img alt="" height={24} src="/chevron-right.svg" width={24} />
-          <span aria-current="page">{page.crumb}</span>
-        </nav>
-        <div className="construction__art">
-          <img
-            alt=""
-            className="construction__illustration"
-            height={307}
-            src="/images/Empty%20Stage%20(Mobile).png.png"
-            width={263}
-          />
-        </div>
-        <div className="construction__copy">
-          <h1>Page Under Construction</h1>
-          <p className={bodyFont.className}>
-            We’re working on something great.
-            <br />
-            Please check back later.
-          </p>
-        </div>
-        <a className={`construction__return ${bodyFont.className}`} href="/">
-          Return to Home
-        </a>
-      </section>
+      {isProducts ? <ProductHero bodyClassName={bodyFont.className} /> : null}
+      {isProducts ? <SoftwareSection bodyClassName={bodyFont.className} /> : null}
+      {isProducts ? <HardwareSection bodyClassName={bodyFont.className} /> : null}
+      {isProducts ? <ProductContact bodyClassName={bodyFont.className} /> : null}
+      {isProducts ? null : (
+        <section className="construction">
+          <nav aria-label="Breadcrumb" className={`construction__crumb ${bodyFont.className}`}>
+            <a href="/">Home</a>
+            <img alt="" height={24} src="/chevron-right.svg" width={24} />
+            <span aria-current="page">{page.crumb}</span>
+          </nav>
+          <div className="construction__art">
+            <img
+              alt=""
+              className="construction__illustration"
+              height={307}
+              src="/images/Empty%20Stage%20(Mobile).png.png"
+              width={263}
+            />
+          </div>
+          <div className="construction__copy">
+            <h1>Page Under Construction</h1>
+            <p className={bodyFont.className}>
+              We’re working on something great.
+              <br />
+              Please check back later.
+            </p>
+          </div>
+          <a className={`construction__return ${bodyFont.className}`} href="/">
+            Return to Home
+          </a>
+        </section>
+      )}
       <section className="empty-stage__content">
         <img
           alt=""
@@ -110,6 +127,7 @@ export default async function PlaceholderPage({
           </p>
         </div>
       </section>
+      <SiteFooter bodyClassName={bodyFont.className} />
     </div>
   )
 }
