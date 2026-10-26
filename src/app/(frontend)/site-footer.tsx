@@ -1,8 +1,14 @@
 import React from 'react'
 
-export function SiteFooter({ bodyClassName }: { bodyClassName: string }) {
+export function SiteFooter({
+  bodyClassName,
+  swapped = false,
+}: {
+  bodyClassName: string
+  swapped?: boolean
+}) {
   return (
-    <footer className={`footer ${bodyClassName}`}>
+    <footer className={`footer${swapped ? ' footer--swapped' : ''} ${bodyClassName}`}>
       <div className="footer__main">
         <div className="footer__brand">
           <img

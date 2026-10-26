@@ -4,6 +4,13 @@ import React from 'react'
 
 import { bodyFont, displayFont } from '../fonts'
 import { HeroFit } from '../hero-fit'
+import { AboutHero } from '../about-hero'
+import { AboutPartners } from '../about-partners'
+import { AboutTeam } from '../about-team'
+import { ApplicationContact } from '../application-contact'
+import { ApplicationCustomers } from '../application-customers'
+import { ApplicationHero } from '../application-hero'
+import { ApplicationResponse } from '../application-response'
 import { ProductHero } from '../product-hero'
 import { SoftwareSection } from '../software-section'
 import { HardwareSection } from '../hardware-section'
@@ -35,7 +42,11 @@ export async function generateMetadata({
     description:
       slug === 'products'
         ? 'Intelligent mission control, autonomous drones, and wireless charging. Designed to work together.'
-        : 'We’re working on something great. Please check back later.',
+        : slug === 'applications'
+          ? 'Forte combines collaborative drone autonomy with AI-assisted visual analysis to support teams on the ground.'
+          : slug === 'about-us'
+            ? 'To unlock the full potential of accessible robotics, bringing forth a future where fully autonomous, multi-agent systems collaborate seamlessly to serve human needs.'
+            : 'We’re working on something great. Please check back later.',
   }
 }
 
@@ -51,15 +62,18 @@ export default async function PlaceholderPage({
 
   const desktopNav = sitePages.filter((item) => item.slug !== 'contact')
   const isProducts = slug === 'products'
+  const isApplications = slug === 'applications'
+  const isAbout = slug === 'about-us'
+  const hasHero = isProducts || isApplications || isAbout
 
   return (
-    <div className={`empty-stage${isProducts ? '' : ' empty-stage--fit'} ${displayFont.className}`}>
-      {isProducts ? <HeroFit /> : null}
+    <div className={`empty-stage${hasHero ? '' : ' empty-stage--fit'} ${displayFont.className}`}>
+      {hasHero ? <HeroFit /> : null}
       <SiteHeader
         bodyClassName={bodyFont.className}
-        compactActions={isProducts ? 'past-hero' : 'always'}
-        showMenu={isProducts}
-        solid={!isProducts}
+        compactActions={hasHero ? 'past-hero' : 'always'}
+        showMenu={hasHero}
+        solid={!hasHero}
       >
         <SiteLogo />
         <div className="empty-stage__actions">
@@ -78,10 +92,17 @@ export default async function PlaceholderPage({
         </div>
       </SiteHeader>
       {isProducts ? <ProductHero bodyClassName={bodyFont.className} /> : null}
+      {isApplications ? <ApplicationHero bodyClassName={bodyFont.className} /> : null}
+      {isAbout ? <AboutHero bodyClassName={bodyFont.className} /> : null}
+      {isAbout ? <AboutTeam bodyClassName={bodyFont.className} /> : null}
+      {isAbout ? <AboutPartners bodyClassName={bodyFont.className} /> : null}
+      {isApplications ? <ApplicationCustomers bodyClassName={bodyFont.className} /> : null}
+      {isApplications ? <ApplicationResponse bodyClassName={bodyFont.className} /> : null}
+      {isApplications ? <ApplicationContact bodyClassName={bodyFont.className} /> : null}
       {isProducts ? <SoftwareSection bodyClassName={bodyFont.className} /> : null}
       {isProducts ? <HardwareSection bodyClassName={bodyFont.className} /> : null}
       {isProducts ? <ProductContact bodyClassName={bodyFont.className} /> : null}
-      {isProducts ? null : (
+      {hasHero ? null : (
         <section className="construction">
           <nav aria-label="Breadcrumb" className={`construction__crumb ${bodyFont.className}`}>
             <a href="/">Home</a>
@@ -127,7 +148,7 @@ export default async function PlaceholderPage({
           </p>
         </div>
       </section>
-      <SiteFooter bodyClassName={bodyFont.className} />
+      <SiteFooter bodyClassName={bodyFont.className} swapped={isAbout} />
     </div>
   )
 }
