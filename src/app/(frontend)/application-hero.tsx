@@ -3,22 +3,39 @@ import React from 'react'
 export function ApplicationHero({ bodyClassName }: { bodyClassName: string }) {
   return (
     <section className="hero application-hero">
-      <div className="application-hero__media">
-        <img
-          alt=""
-          className="application-hero__photo"
-          height={907}
-          src="/images/application/desktop-hero.png"
-          width={1733}
-        />
-      </div>
-      <img
-        alt=""
-        className="hero__image application-hero__mobile"
-        height={812}
-        src="/images/application/Mobile_Hero%20Section.png"
-        width={375}
+      <link
+        rel="preload"
+        as="image"
+        href="/images/application/hero-desktop.webp"
+        type="image/webp"
+        media="(min-width: 768px)"
+        fetchPriority="high"
       />
+      <link
+        rel="preload"
+        as="image"
+        href="/images/application/hero-mobile.webp"
+        type="image/webp"
+        media="(max-width: 767px)"
+        fetchPriority="high"
+      />
+      <div className="application-hero__media">
+        <picture>
+          <source
+            media="(min-width: 768px)"
+            srcSet="/images/application/hero-desktop.webp"
+            type="image/webp"
+          />
+          <img
+            alt=""
+            className="application-hero__photo"
+            fetchPriority="high"
+            height={812}
+            src="/images/application/hero-mobile.webp"
+            width={375}
+          />
+        </picture>
+      </div>
       <div className="hero__copy">
         <div className="hero__text application-hero__text">
           <p className={`application-hero__eyebrow ${bodyClassName}`}>Applications</p>

@@ -3,22 +3,39 @@ import React from 'react'
 export function ProductHero({ bodyClassName }: { bodyClassName: string }) {
   return (
     <section className="hero product-hero">
-      <div className="product-hero__media">
-        <img
-          alt=""
-          className="product-hero__photo"
-          height={941}
-          src="/images/product/desktop-hero.png"
-          width={1672}
-        />
-      </div>
-      <img
-        alt=""
-        className="product-hero__image product-hero__mobile"
-        height={1844}
-        src="/images/product/hero-section.png"
-        width={853}
+      <link
+        rel="preload"
+        as="image"
+        href="/images/product/hero-desktop.webp"
+        type="image/webp"
+        media="(min-width: 768px)"
+        fetchPriority="high"
       />
+      <link
+        rel="preload"
+        as="image"
+        href="/images/product/hero-mobile.webp"
+        type="image/webp"
+        media="(max-width: 767px)"
+        fetchPriority="high"
+      />
+      <div className="product-hero__media">
+        <picture>
+          <source
+            media="(min-width: 768px)"
+            srcSet="/images/product/hero-desktop.webp"
+            type="image/webp"
+          />
+          <img
+            alt=""
+            className="product-hero__photo"
+            fetchPriority="high"
+            height={1844}
+            src="/images/product/hero-mobile.webp"
+            width={853}
+          />
+        </picture>
+      </div>
       <div className="hero__copy">
         <div className="hero__text product-hero__text">
           <p className={`product-hero__eyebrow ${bodyClassName}`}>Products</p>

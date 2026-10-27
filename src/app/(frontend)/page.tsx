@@ -80,23 +80,40 @@ export default function HomePage() {
       </SiteHeader>
       <HeroFit />
       <section className="hero home-hero">
+        <link
+          rel="preload"
+          as="image"
+          href="/images/home-hero-desktop.webp"
+          type="image/webp"
+          media="(min-width: 768px)"
+          fetchPriority="high"
+        />
+        <link
+          rel="preload"
+          as="image"
+          href="/images/home-hero-mobile.webp"
+          type="image/webp"
+          media="(max-width: 767px)"
+          fetchPriority="high"
+        />
         <div className="home-hero__media">
-          <img
-            alt=""
-            className="hero__image"
-            height={1058}
-            src="/images/Desktop_Hero%20Section.png"
-            width={1487}
-          />
+          <picture>
+            <source
+              media="(min-width: 768px)"
+              srcSet="/images/home-hero-desktop.webp"
+              type="image/webp"
+            />
+            <img
+              alt=""
+              className="hero__image"
+              fetchPriority="high"
+              height={1624}
+              src="/images/home-hero-mobile.webp"
+              width={750}
+            />
+          </picture>
           <div aria-hidden="true" className="home-hero__veil" />
         </div>
-        <img
-          alt=""
-          className="hero__image home-hero__mobile"
-          height={812}
-          src="/images/Hero%20Section.png"
-          width={375}
-        />
         <div className="hero__copy">
           <div className="hero__text">
             <h1>{siteHeadline}</h1>
