@@ -3930,7 +3930,8 @@ button {
   background: var(--surface-subtle);
 }
 
-.footer--swapped .footer__main {
+.footer--swapped .footer__main,
+.footer--swapped .footer__desktop {
   background: var(--surface-subtle);
 }
 
