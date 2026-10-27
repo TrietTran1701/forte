@@ -11,3 +11,6 @@ export const EASE_INDICATOR = CustomEase.create(
   'forteIndicator',
   'M0,0 C0.449,0.008 0.492,0.996 1,1',
 )
+
+/** Landing-page scroll steps — cubic-bezier(0.48, 0.01, 0.28, 0.99). */
+export const EASE_SCROLL = CustomEase.create('forteScroll', 'M0,0 C0.48,0.01 0.28,0.99 1,1')

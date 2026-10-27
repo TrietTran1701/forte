@@ -5,6 +5,7 @@ import { getSiteUrl, siteDescription, siteHeadline, siteName, siteTitle } from '
 import { AboutDesktop } from './about-desktop'
 import { CardCarousel } from './card-carousel'
 import { HeroFit } from './hero-fit'
+import { HomeScroll } from './home-scroll'
 import { CustomersCarousel } from './customers-carousel'
 import { CustomersDesktop } from './customers-desktop'
 import { bodyFont, displayFont } from './fonts'
@@ -16,9 +17,7 @@ import { SiteLogo } from './site-logo'
 import { sitePages } from './site-nav'
 import './styles.css'
 
-const desktopNav = sitePages.filter(
-  (page) => page.slug !== 'contact' && page.slug !== 'technology',
-)
+const desktopNav = sitePages.filter((page) => page.slug !== 'contact' && page.slug !== 'technology')
 const heroDescription = siteDescription.split(/(?<=delivering )/)
 
 const siteUrl = getSiteUrl()
@@ -61,6 +60,7 @@ export default function HomePage() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
       />
+      <HomeScroll />
       <SiteHeader bodyClassName={bodyFont.className} compactActions="past-hero">
         <SiteLogo />
         <div className="empty-stage__actions">
@@ -139,8 +139,8 @@ export default function HomePage() {
           </div>
           <p className={`about__body ${bodyFont.className}`}>
             Forte combines intelligent <span className="about__emphasis">mission control</span> with{' '}
-            <span className="about__emphasis">autonomous drone fleets</span> to help security teams see
-            more, <span className="about__emphasis">coordinate faster</span>, and operate with{' '}
+            <span className="about__emphasis">autonomous drone fleets</span> to help security teams
+            see more, <span className="about__emphasis">coordinate faster</span>, and operate with{' '}
             <span className="about__emphasis">greater control</span>.
           </p>
         </div>
@@ -159,8 +159,9 @@ export default function HomePage() {
             Forte brings intelligent{' '}
             <span className="product__emphasis">surveillance software and autonomous</span> drones
             together in one platform, enabling teams to coordinate{' '}
-            <span className="product__emphasis">multi-drone missions</span>, monitor complex sites, and
-            respond faster with <span className="product__emphasis">AI-supported analysis.</span>
+            <span className="product__emphasis">multi-drone missions</span>, monitor complex sites,
+            and respond faster with{' '}
+            <span className="product__emphasis">AI-supported analysis.</span>
           </p>
         </div>
         <ProductCarousel bodyClassName={bodyFont.className} />
@@ -215,7 +216,11 @@ export default function HomePage() {
           <div className={`contact__form ${bodyFont.className}`}>
             <label className="contact__field">
               <img alt="" className="contact__mail" height={20} src="/mail.svg" width={20} />
-              <input aria-label="Work email address" placeholder="Work email address" type="email" />
+              <input
+                aria-label="Work email address"
+                placeholder="Work email address"
+                type="email"
+              />
             </label>
             <button className="contact__submit" type="button">
               Get a Demo
