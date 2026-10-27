@@ -2,18 +2,24 @@ import React from 'react'
 
 import { getSiteUrl, siteDescription, siteHeadline, siteName, siteTitle } from '@/lib/site'
 
+import { AboutDesktop } from './about-desktop'
 import { CardCarousel } from './card-carousel'
 import { HeroFit } from './hero-fit'
 import { CustomersCarousel } from './customers-carousel'
+import { CustomersDesktop } from './customers-desktop'
 import { bodyFont, displayFont } from './fonts'
 import { ProductCarousel } from './product-carousel'
+import { ProductDesktop } from './product-desktop'
 import { SiteFooter } from './site-footer'
 import { SiteHeader } from './site-header'
 import { SiteLogo } from './site-logo'
 import { sitePages } from './site-nav'
 import './styles.css'
 
-const desktopNav = sitePages.filter((page) => page.slug !== 'contact')
+const desktopNav = sitePages.filter(
+  (page) => page.slug !== 'contact' && page.slug !== 'technology',
+)
+const heroDescription = siteDescription.split(/(?<=delivering )/)
 
 const siteUrl = getSiteUrl()
 
@@ -50,7 +56,7 @@ const structuredData = {
 
 export default function HomePage() {
   return (
-    <div className={`empty-stage ${displayFont.className}`}>
+    <div className={`empty-stage empty-stage--home ${displayFont.className}`}>
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
@@ -67,16 +73,26 @@ export default function HomePage() {
               ))}
             </ul>
           </nav>
-          <button className={`empty-stage__contact ${bodyFont.className}`} disabled type="button">
+          <a className={`empty-stage__contact ${bodyFont.className}`} href="/contact">
             Contact Us
-          </button>
+          </a>
         </div>
       </SiteHeader>
       <HeroFit />
-      <section className="hero">
+      <section className="hero home-hero">
+        <div className="home-hero__media">
+          <img
+            alt=""
+            className="hero__image"
+            height={1058}
+            src="/images/Desktop_Hero%20Section.png"
+            width={1487}
+          />
+          <div aria-hidden="true" className="home-hero__veil" />
+        </div>
         <img
           alt=""
-          className="hero__image"
+          className="hero__image home-hero__mobile"
           height={812}
           src="/images/Hero%20Section.png"
           width={375}
@@ -84,7 +100,11 @@ export default function HomePage() {
         <div className="hero__copy">
           <div className="hero__text">
             <h1>{siteHeadline}</h1>
-            <p className={bodyFont.className}>{siteDescription}</p>
+            <p className={bodyFont.className}>
+              {heroDescription[0]}
+              <br className="home-hero__break" />
+              {heroDescription[1]}
+            </p>
           </div>
           <a className={`hero__cta ${bodyFont.className}`} href="#contact">
             Get a Demo
@@ -92,6 +112,7 @@ export default function HomePage() {
         </div>
       </section>
       <section aria-labelledby="about-heading" className="about">
+        <AboutDesktop bodyClassName={bodyFont.className} />
         <div className="about__copy">
           <div className="about__intro">
             <p className={`about__eyebrow ${bodyFont.className}`}>Key Benefits</p>
@@ -109,6 +130,7 @@ export default function HomePage() {
         <CardCarousel bodyClassName={bodyFont.className} />
       </section>
       <section aria-labelledby="product-heading" className="product">
+        <ProductDesktop bodyClassName={bodyFont.className} />
         <div className="product__copy">
           <div className="product__intro">
             <p className={`product__eyebrow ${bodyFont.className}`}>Industry solutions</p>
@@ -127,6 +149,7 @@ export default function HomePage() {
         <ProductCarousel bodyClassName={bodyFont.className} />
       </section>
       <section aria-labelledby="customers-heading" className="customers">
+        <CustomersDesktop bodyClassName={bodyFont.className} />
         <div className="customers__copy">
           <div className="customers__intro">
             <p className={`customers__eyebrow ${bodyFont.className}`}>Who we serve</p>
@@ -142,6 +165,13 @@ export default function HomePage() {
         <CustomersCarousel bodyClassName={bodyFont.className} />
       </section>
       <section aria-labelledby="contact-heading" className="contact" id="contact">
+        <img
+          alt=""
+          className="contact__photo"
+          height={941}
+          src="/images/home/contact-desktop.png"
+          width={1672}
+        />
         <img
           alt=""
           className="contact__image"
@@ -177,23 +207,6 @@ export default function HomePage() {
         </div>
       </section>
       <SiteFooter bodyClassName={bodyFont.className} />
-      <section className="empty-stage__content">
-        <img
-          alt=""
-          className="empty-stage__illustration"
-          height={448}
-          src="/images/Empty%20Stage%20(Desktop).png.png"
-          width={384}
-        />
-        <div className="empty-stage__copy">
-          <h1>Page Under Construction</h1>
-          <p>
-            We’re working on something great.
-            <br />
-            Please check back later.
-          </p>
-        </div>
-      </section>
     </div>
   )
 }

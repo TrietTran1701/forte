@@ -17,9 +17,9 @@ export function SiteLogo() {
         <img
           alt=""
           className="empty-stage__logo-mark empty-stage__logo-mark--dark"
-          height={44}
-          src="/logo.svg"
-          width={44}
+          height={54}
+          src="/images/nav-logo.png"
+          width={54}
         />
       </span>
     </a>

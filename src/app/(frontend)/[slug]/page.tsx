@@ -60,7 +60,9 @@ export default async function PlaceholderPage({
 
   if (!page) notFound()
 
-  const desktopNav = sitePages.filter((item) => item.slug !== 'contact')
+  const desktopNav = sitePages.filter(
+    (item) => item.slug !== 'contact' && item.slug !== 'technology',
+  )
   const isProducts = slug === 'products'
   const isApplications = slug === 'applications'
   const isAbout = slug === 'about-us'
@@ -81,14 +83,16 @@ export default async function PlaceholderPage({
             <ul className="empty-stage__nav">
               {desktopNav.map((item) => (
                 <li key={item.slug}>
-                  <a href={`/${item.slug}`}>{item.label}</a>
+                  <a aria-current={item.slug === slug ? 'page' : undefined} href={`/${item.slug}`}>
+                    {item.label}
+                  </a>
                 </li>
               ))}
             </ul>
           </nav>
-          <button className={`empty-stage__contact ${bodyFont.className}`} disabled type="button">
+          <a className={`empty-stage__contact ${bodyFont.className}`} href="/contact">
             Contact Us
-          </button>
+          </a>
         </div>
       </SiteHeader>
       {isProducts ? <ProductHero bodyClassName={bodyFont.className} /> : null}
