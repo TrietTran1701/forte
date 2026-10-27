@@ -69,7 +69,9 @@ export default async function PlaceholderPage({
   const hasHero = isProducts || isApplications || isAbout
 
   return (
-    <div className={`empty-stage${hasHero ? '' : ' empty-stage--fit'} ${displayFont.className}`}>
+    <div
+      className={`empty-stage${isProducts ? ' empty-stage--products' : ''}${hasHero ? '' : ' empty-stage--fit'} ${displayFont.className}`}
+    >
       {hasHero ? <HeroFit /> : null}
       <SiteHeader
         bodyClassName={bodyFont.className}

@@ -5,6 +5,13 @@ export function ProductContact({ bodyClassName }: { bodyClassName: string }) {
     <section aria-labelledby="product-contact-heading" className="contact product-contact" id="contact">
       <img
         alt=""
+        className="product-contact__photo"
+        height={772}
+        src="/images/product/contact-desktop.png"
+        width={2037}
+      />
+      <img
+        alt=""
         className="contact__image product-contact__image"
         height={1844}
         src="/images/product/contact.png"
@@ -14,7 +21,7 @@ export function ProductContact({ bodyClassName }: { bodyClassName: string }) {
       <div className="contact__content">
         <div className="contact__copy">
           <h2 className="contact__title" id="product-contact-heading">
-            Software Licensing.
+            Software Licensing.{' '}
             <br />
             Hardware Rental.
           </h2>
