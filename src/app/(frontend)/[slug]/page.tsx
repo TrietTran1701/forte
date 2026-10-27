@@ -70,7 +70,7 @@ export default async function PlaceholderPage({
 
   return (
     <div
-      className={`empty-stage${isProducts ? ' empty-stage--products' : ''}${isApplications ? ' empty-stage--applications' : ''}${hasHero ? '' : ' empty-stage--fit'} ${displayFont.className}`}
+      className={`empty-stage${isProducts ? ' empty-stage--products' : ''}${isApplications ? ' empty-stage--applications' : ''}${isAbout ? ' empty-stage--about' : ''}${hasHero ? '' : ' empty-stage--fit'} ${displayFont.className}`}
     >
       {hasHero ? <HeroFit /> : null}
       <SiteHeader

@@ -3,9 +3,18 @@ import React from 'react'
 export function AboutHero({ bodyClassName }: { bodyClassName: string }) {
   return (
     <section className="hero about-hero">
+      <div className="about-hero__media">
+        <img
+          alt=""
+          className="about-hero__photo"
+          height={907}
+          src="/images/about/desktop-hero.png"
+          width={1733}
+        />
+      </div>
       <img
         alt=""
-        className="hero__image"
+        className="hero__image about-hero__mobile"
         height={812}
         src="/images/about/Mobile_Hero%20Section.png"
         width={375}

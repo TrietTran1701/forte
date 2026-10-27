@@ -13,6 +13,83 @@ const partners = [
   { src: '/images/about/Logo/Logo%207.png', alt: 'Wistron', width: 147, height: 32 },
 ]
 
+type DesktopLogo = {
+  src: string
+  alt: string
+  width: number
+  height: number
+  frame: 'sosv' | 'hax' | 'ascend' | 'do' | 'wide'
+}
+
+const desktopInvestors: DesktopLogo[] = [
+  {
+    src: '/images/about/desktop-logo-sosv.png',
+    alt: 'SOSV',
+    width: 1771,
+    height: 767,
+    frame: 'sosv',
+  },
+  {
+    src: '/images/about/desktop-logo-hax.png',
+    alt: 'HAX',
+    width: 1004,
+    height: 468,
+    frame: 'hax',
+  },
+  {
+    src: '/images/about/desktop-logo-ascend.png',
+    alt: 'Ascend Vietnam Ventures',
+    width: 1774,
+    height: 887,
+    frame: 'ascend',
+  },
+  {
+    src: '/images/about/desktop-logo-do.png',
+    alt: 'DO Ventures',
+    width: 1254,
+    height: 1254,
+    frame: 'do',
+  },
+]
+
+const desktopPartners: DesktopLogo[] = [
+  {
+    src: '/images/about/desktop-logo-google.png',
+    alt: 'Google for Startups',
+    width: 2122,
+    height: 741,
+    frame: 'wide',
+  },
+  {
+    src: '/images/about/desktop-logo-microsoft.png',
+    alt: 'Microsoft for Startups',
+    width: 2121,
+    height: 741,
+    frame: 'wide',
+  },
+  {
+    src: '/images/about/desktop-logo-wistron.png',
+    alt: 'Wistron',
+    width: 1774,
+    height: 887,
+    frame: 'wide',
+  },
+]
+
+function DesktopLogos({ items }: { items: DesktopLogo[] }) {
+  return (
+    <ul className="partners__logos">
+      {items.map((item) => (
+        <li className="partners__tile" key={item.alt}>
+          <span className={`partners__logo-frame partners__logo-frame--${item.frame}`}>
+            <img alt={item.alt} height={item.height} src={item.src} width={item.width} />
+          </span>
+        </li>
+      ))}
+    </ul>
+  )
+}
+
 function LogoGrid({
   items,
 }: {
@@ -31,11 +108,11 @@ function LogoGrid({
 
 export function AboutPartners({ bodyClassName }: { bodyClassName: string }) {
   return (
-    <section aria-labelledby="about-partners-heading" className="partners">
+    <section aria-label="Building with trusted partners" className="partners">
       <div className="partners__copy">
         <div className="partners__intro">
           <p className={`partners__eyebrow ${bodyClassName}`}>Meet Our Partners</p>
-          <h2 className="partners__title" id="about-partners-heading">
+          <h2 className="partners__title">
             Building with trusted partners
           </h2>
         </div>
@@ -52,6 +129,26 @@ export function AboutPartners({ bodyClassName }: { bodyClassName: string }) {
         <div className="partners__group">
           <h3 className={`partners__label ${bodyClassName}`}>Strategic Partners</h3>
           <LogoGrid items={partners} />
+        </div>
+      </div>
+      <div className="partners__desktop">
+        <div className="partners__heading">
+          <p className={`partners__pill ${bodyClassName}`}>Meet Our Partners</p>
+          <h2 className="partners__desktop-title">Building with trusted partners</h2>
+          <p className={`partners__lead ${bodyClassName}`}>
+            We are supported by investors and strategic partners who share our belief in a more
+            capable and accessible future for robotic operations.
+          </p>
+        </div>
+        <div className="partners__rows">
+          <div className="partners__row">
+            <h3 className={`partners__row-title ${bodyClassName}`}>Investors</h3>
+            <DesktopLogos items={desktopInvestors} />
+          </div>
+          <div className="partners__row partners__row--strategic">
+            <h3 className={`partners__row-title ${bodyClassName}`}>Strategic Partners</h3>
+            <DesktopLogos items={desktopPartners} />
+          </div>
         </div>
       </div>
     </section>
