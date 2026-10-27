@@ -5,7 +5,20 @@ export function ApplicationContact({ bodyClassName }: { bodyClassName: string })
     <section aria-labelledby="application-contact-heading" className="app-contact" id="contact">
       <div className="app-contact__content">
         <div className="app-contact__heading">
-          <img alt="" className="app-contact__mark" height={48} src="/logo-light.svg" width={48} />
+          <img
+            alt=""
+            className="app-contact__mark app-contact__mark--mobile"
+            height={48}
+            src="/logo-light.svg"
+            width={48}
+          />
+          <img
+            alt=""
+            className="app-contact__mark app-contact__mark--desktop"
+            height={2911}
+            src="/images/application/desktop-mark.png"
+            width={2911}
+          />
           <div className="app-contact__copy">
             <div className="app-contact__intro">
               <p className={`app-contact__eyebrow ${bodyClassName}`}>Request a demo</p>

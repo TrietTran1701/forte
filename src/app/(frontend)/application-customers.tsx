@@ -11,6 +11,9 @@ const DRAG_THRESHOLD = 48
 
 type CustomerSlide = {
   src: string
+  desktopSrc: string
+  desktopWidth: number
+  desktopHeight: number
   alt: string
   title: string
   description: string
@@ -19,6 +22,9 @@ type CustomerSlide = {
 const customerSlides: CustomerSlide[] = [
   {
     src: '/images/application/Mobile_Patrol%201.png',
+    desktopSrc: '/images/application/desktop-industrial.png',
+    desktopWidth: 1437,
+    desktopHeight: 1095,
     alt: 'Drones flying over an industrial park',
     title: 'Industrial Zones',
     description:
@@ -26,6 +32,9 @@ const customerSlides: CustomerSlide[] = [
   },
   {
     src: '/images/application/Mobile_Patrol%202.png',
+    desktopSrc: '/images/application/desktop-agricultural.png',
+    desktopWidth: 1437,
+    desktopHeight: 1094,
     alt: 'Drones flying over farmland and agricultural buildings',
     title: 'Agricultural Sites',
     description:
@@ -33,6 +42,9 @@ const customerSlides: CustomerSlide[] = [
   },
   {
     src: '/images/application/Mobile_Patrol%203.png',
+    desktopSrc: '/images/application/desktop-estate.png',
+    desktopWidth: 1437,
+    desktopHeight: 1095,
     alt: 'Drones flying over a private estate',
     title: 'Private Properties & Estates',
     description: 'Extend security coverage across large properties with mobile aerial support.',
@@ -168,11 +180,11 @@ export function ApplicationCustomers({ bodyClassName }: { bodyClassName: string 
   )
 
   return (
-    <section aria-labelledby="ideal-customers-heading" className="ideal">
+    <section aria-label="Extend your team’s reach across large sites" className="ideal">
       <div className="ideal__copy">
         <div className="ideal__intro">
           <p className={`ideal__eyebrow ${bodyClassName}`}>{`Automated Security & Patrols`}</p>
-          <h2 className="ideal__title" id="ideal-customers-heading">
+          <h2 className="ideal__title">
             Extend your team’s reach across large sites
           </h2>
         </div>
@@ -232,6 +244,35 @@ export function ApplicationCustomers({ bodyClassName }: { bodyClassName: string 
           >
             <Chevron direction="right" />
           </button>
+        </div>
+      </div>
+      <div className="ideal__desktop">
+        <div className="ideal__heading">
+          <p className={`ideal__pill ${bodyClassName}`}>{`Automated Security & Patrols`}</p>
+          <h2 className="ideal__desktop-title">Extend your team’s reach across large sites</h2>
+          <p className={`ideal__lead ${bodyClassName}`}>
+            Support security teams with drone fleets that work together on patrol missions. Collect
+            aerial information to help teams understand conditions on site.
+          </p>
+        </div>
+        <div className="ideal__grid">
+          {customerSlides.map((slide) => (
+            <article className="ideal__card" key={slide.title}>
+              <div className="ideal__shot">
+                <img
+                  alt={slide.alt}
+                  className="ideal__photo"
+                  height={slide.desktopHeight}
+                  src={slide.desktopSrc}
+                  width={slide.desktopWidth}
+                />
+              </div>
+              <div className={`ideal__card-copy ${bodyClassName}`}>
+                <h3 className="ideal__card-title">{slide.title}</h3>
+                <p className="ideal__card-body">{slide.description}</p>
+              </div>
+            </article>
+          ))}
         </div>
       </div>
     </section>
