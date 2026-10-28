@@ -76,7 +76,7 @@ export function ProductDesktop({ bodyClassName }: { bodyClassName: string }) {
       const place = (
         index: number,
         animate: boolean,
-        motion?: { duration: number; ease: gsap.Ease },
+        motion?: { duration: number; ease: gsap.EaseFunction },
       ) => {
         const { largeW, largeH, smallW, smallH, gap } = metrics()
         const duration = animate && !reducedMotion ? (motion?.duration ?? SLIDE_SECONDS) : 0
@@ -105,10 +105,10 @@ export function ProductDesktop({ bodyClassName }: { bodyClassName: string }) {
       }
 
       const playback = {
-        goTo: (_next: number, _motion?: { duration: number; ease: gsap.Ease }) => {},
+        goTo: (_next: number, _motion?: { duration: number; ease: gsap.EaseFunction }) => {},
       }
 
-      playback.goTo = contextSafe((next: number, motion?: { duration: number; ease: gsap.Ease }) => {
+      playback.goTo = contextSafe((next: number, motion?: { duration: number; ease: gsap.EaseFunction }) => {
         const index = Math.max(0, Math.min(lastIndex, next))
         if (index === indexRef.current) return
         indexRef.current = index

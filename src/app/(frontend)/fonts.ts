@@ -1,11 +1,15 @@
-import { Google_Sans_Flex, Wix_Madefor_Display } from 'next/font/google'
+import localFont from 'next/font/local'
 
-export const bodyFont = Google_Sans_Flex({
-  subsets: ['latin'],
-  weight: ['400', '500', '600'],
+// Self-hosted so production builds do not depend on Google Fonts CSS.
+// Google sometimes returns extensionless font URLs that Next.js 16 cannot parse.
+export const bodyFont = localFont({
+  src: './fonts/google-sans-flex-latin.woff2',
+  weight: '400 600',
+  display: 'swap',
 })
 
-export const displayFont = Wix_Madefor_Display({
-  subsets: ['latin'],
-  weight: ['400', '500', '600'],
+export const displayFont = localFont({
+  src: './fonts/wix-madefor-display-latin.woff2',
+  weight: '400 600',
+  display: 'swap',
 })
