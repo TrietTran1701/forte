@@ -4,10 +4,12 @@ import React from 'react'
 
 import { bodyFont, displayFont } from '../fonts'
 import { HeroFit } from '../hero-fit'
+import { PageScroll } from '../home-scroll'
 import { AboutHero } from '../about-hero'
 import { AboutPartners } from '../about-partners'
 import { AboutTeam } from '../about-team'
 import { ApplicationContact } from '../application-contact'
+import { ContactHero } from '../contact-hero'
 import { ApplicationCustomers } from '../application-customers'
 import { ApplicationHero } from '../application-hero'
 import { ApplicationResponse } from '../application-response'
@@ -44,9 +46,11 @@ export async function generateMetadata({
         ? 'Intelligent mission control, autonomous drones, and wireless charging. Designed to work together.'
         : slug === 'applications'
           ? 'Forte combines collaborative drone autonomy with AI-assisted visual analysis to support teams on the ground.'
-          : slug === 'about-us'
+          :       slug === 'about-us'
             ? 'To unlock the full potential of accessible robotics, bringing forth a future where fully autonomous, multi-agent systems collaborate seamlessly to serve human needs.'
-            : 'We’re working on something great. Please check back later.',
+            : slug === 'contact'
+              ? 'See Forte in action. Request a demo for 24/7 autonomous monitoring, real-time alerts, and scalable site protection.'
+              : 'We’re working on something great. Please check back later.',
   }
 }
 
@@ -66,13 +70,15 @@ export default async function PlaceholderPage({
   const isProducts = slug === 'products'
   const isApplications = slug === 'applications'
   const isAbout = slug === 'about-us'
-  const hasHero = isProducts || isApplications || isAbout
+  const isContact = slug === 'contact'
+  const hasHero = isProducts || isApplications || isAbout || isContact
 
   return (
     <div
-      className={`empty-stage${isProducts ? ' empty-stage--products' : ''}${isApplications ? ' empty-stage--applications' : ''}${isAbout ? ' empty-stage--about' : ''}${hasHero ? '' : ' empty-stage--fit'} ${displayFont.className}`}
+      className={`empty-stage${isProducts ? ' empty-stage--products' : ''}${isApplications ? ' empty-stage--applications' : ''}${isAbout ? ' empty-stage--about' : ''}${isContact ? ' empty-stage--contact' : ''}${hasHero ? '' : ' empty-stage--fit'} ${displayFont.className}`}
     >
       {hasHero ? <HeroFit /> : null}
+      {hasHero ? <PageScroll /> : null}
       <SiteHeader
         bodyClassName={bodyFont.className}
         compactActions={hasHero ? 'past-hero' : 'always'}
@@ -100,6 +106,7 @@ export default async function PlaceholderPage({
       {isProducts ? <ProductHero bodyClassName={bodyFont.className} /> : null}
       {isApplications ? <ApplicationHero bodyClassName={bodyFont.className} /> : null}
       {isAbout ? <AboutHero bodyClassName={bodyFont.className} /> : null}
+      {isContact ? <ContactHero bodyClassName={bodyFont.className} /> : null}
       {isAbout ? <AboutTeam bodyClassName={bodyFont.className} /> : null}
       {isAbout ? <AboutPartners bodyClassName={bodyFont.className} /> : null}
       {isApplications ? <ApplicationCustomers bodyClassName={bodyFont.className} /> : null}

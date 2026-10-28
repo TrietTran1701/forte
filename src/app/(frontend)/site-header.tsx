@@ -58,6 +58,7 @@ export function SiteHeader({
   const prevCompactRef = useRef<boolean | null>(null)
   const [scrolled, setScrolled] = useState(false)
   const [pastHero, setPastHero] = useState(false)
+  const [settle, setSettle] = useState(false)
   const [open, setOpen] = useState(false)
   const { contextSafe } = useGSAP({ scope: headerRef })
 
@@ -65,24 +66,45 @@ export function SiteHeader({
   const compact = compactActions === 'always' || (compactActions === 'past-hero' && pastHero)
 
   useLayoutEffect(() => {
+    const passedRef = { current: null as boolean | null }
+    let settleTimer = 0
+
     const update = () => {
-      setScrolled(window.scrollY > 0)
+      // On the home page the desktop step sets this before the page moves, so the
+      // bar eases for the full 2.5s with the section change. Other pages measure
+      // the hero against the bar.
+      let passed = window.scrollY > 0
+      if (compactActions === 'past-hero') {
+        const step = document.documentElement.dataset.homeStep
+        if (step != null) {
+          passed = Number(step) > 0
+        } else {
+          const hero = document.querySelector('.hero')
+          // Measured against the bar row rather than the header, whose height changes
+          // while the panel is open and would flip this mid-animation.
+          const row = headerRef.current?.querySelector('.empty-stage__bar-row')
+          passed = Boolean(
+            hero && row && hero.getBoundingClientRect().bottom <= row.getBoundingClientRect().bottom,
+          )
+        }
+      }
 
-      if (compactActions !== 'past-hero') return
-
-      const hero = document.querySelector('.hero')
-      // Measured against the bar row rather than the header, whose height changes
-      // while the panel is open and would flip this mid-animation.
-      const row = headerRef.current?.querySelector('.empty-stage__bar-row')
-      if (!hero || !row) return
-
-      setPastHero(hero.getBoundingClientRect().bottom <= row.getBoundingClientRect().bottom)
+      if (passedRef.current === passed) return
+      if (passedRef.current !== null && !prefersReducedMotion()) {
+        setSettle(true)
+        window.clearTimeout(settleTimer)
+        settleTimer = window.setTimeout(() => setSettle(false), 2500)
+      }
+      passedRef.current = passed
+      setScrolled(passed)
+      if (compactActions === 'past-hero') setPastHero(passed)
     }
 
     update()
     window.addEventListener('scroll', update, { passive: true })
     window.addEventListener('resize', update)
     return () => {
+      window.clearTimeout(settleTimer)
       window.removeEventListener('scroll', update)
       window.removeEventListener('resize', update)
     }
@@ -248,11 +270,7 @@ export function SiteHeader({
     // instead of emptying the panel and leaving a bare white block behind.
     timeline.to(PANEL_INNER, { autoAlpha: 0, duration: 0.26, ease: 'power1.in' }, 0)
     timeline.to(CLOSE, { autoAlpha: 0, duration: 0.14, ease: 'power1.out' }, 0)
-    timeline.to(
-      clipRef.current,
-      { hidden, duration: 0.32, onUpdate: () => writeClip(root) },
-      0.04,
-    )
+    timeline.to(clipRef.current, { hidden, duration: 0.32, onUpdate: () => writeClip(root) }, 0.04)
     timeline.to(trigger, { autoAlpha: 1, duration: 0.2, ease: 'power1.out' }, 0.12)
     // Re-arm the trigger as soon as it is visible, so a tap during the collapse
     // reopens from wherever the clip currently is instead of being swallowed.
@@ -275,6 +293,7 @@ export function SiteHeader({
   const className = [
     'empty-stage__bar',
     solid || scrolled ? 'empty-stage__bar--scrolled' : '',
+    settle ? 'empty-stage__bar--settle' : '',
     open ? 'empty-stage__bar--open' : '',
     compact ? 'empty-stage__bar--compact' : '',
   ]
@@ -340,11 +359,13 @@ export function SiteHeader({
         <nav aria-label="Mobile" className="empty-stage__panel" id="mobile-menu">
           <div className={`empty-stage__panel-inner ${bodyClassName}`}>
             <ul>
-              {sitePages.map((page) => (
-                <li key={page.slug}>
-                  <a href={`/${page.slug}`}>{page.label}</a>
-                </li>
-              ))}
+              {sitePages
+                .filter((page) => page.slug !== 'technology')
+                .map((page) => (
+                  <li key={page.slug}>
+                    <a href={`/${page.slug}`}>{page.label}</a>
+                  </li>
+                ))}
             </ul>
           </div>
         </nav>

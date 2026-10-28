@@ -4,7 +4,7 @@ import { useGSAP } from '@gsap/react'
 import gsap from 'gsap'
 import React, { useRef, useState } from 'react'
 
-import { EASE_IN_OUT } from './eases'
+import { EASE_CAROUSEL, EASE_IN_OUT } from './eases'
 
 gsap.registerPlugin(useGSAP)
 
@@ -73,9 +73,14 @@ export function ProductDesktop({ bodyClassName }: { bodyClassName: string }) {
         }
       }
 
-      const place = (index: number, animate: boolean) => {
+      const place = (
+        index: number,
+        animate: boolean,
+        motion?: { duration: number; ease: gsap.Ease },
+      ) => {
         const { largeW, largeH, smallW, smallH, gap } = metrics()
-        const duration = animate && !reducedMotion ? SLIDE_SECONDS : 0
+        const duration = animate && !reducedMotion ? (motion?.duration ?? SLIDE_SECONDS) : 0
+        const ease = motion?.ease ?? EASE_IN_OUT
         let activeLeft = 0
 
         slides.forEach((slide, slideIndex) => {
@@ -86,7 +91,7 @@ export function ProductDesktop({ bodyClassName }: { bodyClassName: string }) {
             height: active ? largeH : smallH,
             opacity: active ? 1 : 0.3,
             duration,
-            ease: EASE_IN_OUT,
+            ease,
             overwrite: 'auto',
           })
         })
@@ -94,21 +99,21 @@ export function ProductDesktop({ bodyClassName }: { bodyClassName: string }) {
         gsap.to(track, {
           x: viewport.offsetWidth / 2 - activeLeft - largeW / 2,
           duration,
-          ease: EASE_IN_OUT,
+          ease,
           overwrite: 'auto',
         })
       }
 
       const playback = {
-        goTo: (_next: number) => {},
+        goTo: (_next: number, _motion?: { duration: number; ease: gsap.Ease }) => {},
       }
 
-      playback.goTo = contextSafe((next: number) => {
+      playback.goTo = contextSafe((next: number, motion?: { duration: number; ease: gsap.Ease }) => {
         const index = Math.max(0, Math.min(lastIndex, next))
         if (index === indexRef.current) return
         indexRef.current = index
         setActiveIndex(index)
-        place(index, true)
+        place(index, true, motion)
       })
 
       goToRef.current = playback.goTo
@@ -130,9 +135,20 @@ export function ProductDesktop({ bodyClassName }: { bodyClassName: string }) {
 
       root.addEventListener('keydown', onKeyDown)
       window.addEventListener('resize', onResize)
+      let productTimer = 0
+      const onProductShown = () => {
+        window.clearTimeout(productTimer)
+        productTimer = window.setTimeout(() => {
+          if (indexRef.current !== 0) return
+          playback.goTo(1, { duration: 2, ease: EASE_CAROUSEL })
+        }, 2000)
+      }
+      window.addEventListener('forte-product-shown', onProductShown)
       place(0, false)
 
       return () => {
+        window.clearTimeout(productTimer)
+        window.removeEventListener('forte-product-shown', onProductShown)
         root.removeEventListener('keydown', onKeyDown)
         window.removeEventListener('resize', onResize)
       }
