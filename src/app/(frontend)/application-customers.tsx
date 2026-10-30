@@ -23,8 +23,8 @@ const customerSlides: CustomerSlide[] = [
   {
     src: '/images/application/Mobile_Patrol%201.png',
     desktopSrc: '/images/application/desktop-industrial.png',
-    desktopWidth: 1437,
-    desktopHeight: 1095,
+    desktopWidth: 2040,
+    desktopHeight: 1555,
     alt: 'Drones flying over an industrial park',
     title: 'Industrial Zones',
     description:
@@ -33,8 +33,8 @@ const customerSlides: CustomerSlide[] = [
   {
     src: '/images/application/Mobile_Patrol%202.png',
     desktopSrc: '/images/application/desktop-agricultural.png',
-    desktopWidth: 1437,
-    desktopHeight: 1094,
+    desktopWidth: 2040,
+    desktopHeight: 1555,
     alt: 'Drones flying over farmland and agricultural buildings',
     title: 'Agricultural Sites',
     description:
@@ -43,8 +43,8 @@ const customerSlides: CustomerSlide[] = [
   {
     src: '/images/application/Mobile_Patrol%203.png',
     desktopSrc: '/images/application/desktop-estate.png',
-    desktopWidth: 1437,
-    desktopHeight: 1095,
+    desktopWidth: 2040,
+    desktopHeight: 1555,
     alt: 'Drones flying over a private estate',
     title: 'Private Properties & Estates',
     description: 'Extend security coverage across large properties with mobile aerial support.',

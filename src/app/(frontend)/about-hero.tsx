@@ -41,7 +41,7 @@ export function AboutHero({ bodyClassName }: { bodyClassName: string }) {
             autonomous, multi-agent systems collaborate seamlessly to serve human needs.
           </p>
         </div>
-        <a className={`hero__cta ${bodyClassName}`} href="#about">
+        <a className={`hero__cta ${bodyClassName}`} href="/contact">
           Learn More
         </a>
       </div>

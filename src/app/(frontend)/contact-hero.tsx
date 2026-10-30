@@ -55,9 +55,9 @@ export function ContactHero({ bodyClassName }: { bodyClassName: string }) {
             <img alt="" className="contact__mail" height={20} src="/mail.svg" width={20} />
             <input aria-label="Work email address" placeholder="Work email address" type="email" />
           </label>
-          <button className="contact__submit" type="button">
+          <a className="contact__submit" href="/contact">
             Get a Demo
-          </button>
+          </a>
         </div>
       </div>
     </section>

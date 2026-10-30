@@ -74,18 +74,17 @@ export function SiteFooter({
         <div className="footer__nav">
           <div className="footer__columns">
             <div className="footer__column">
-              <p className="footer__heading">Product</p>
+              <p className="footer__heading">Overview</p>
               <ul className="footer__list">
                 <li className="footer__item">
-                  <a className="footer__link" href="/#product-heading">
-                    Overview
+                  <a className="footer__link" href="/products">
+                    Products
                   </a>
                 </li>
                 <li className="footer__item">
-                  <a className="footer__link" href="/#product-heading">
-                    Solutions
+                  <a className="footer__link" href="/applications">
+                    Applications
                   </a>
-                  <span className="footer__badge">New</span>
                 </li>
               </ul>
             </div>
@@ -93,12 +92,12 @@ export function SiteFooter({
               <p className="footer__heading">Company</p>
               <ul className="footer__list">
                 <li className="footer__item">
-                  <a className="footer__link" href="/#about-heading">
+                  <a className="footer__link" href="/about-us">
                     About us
                   </a>
                 </li>
                 <li className="footer__item">
-                  <a className="footer__link" href="/#contact">
+                  <a className="footer__link" href="/contact">
                     Contact
                   </a>
                 </li>

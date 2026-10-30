@@ -71,7 +71,7 @@ export function SiteHeader({
 
     const update = () => {
       // On the home page the desktop step sets this before the page moves, so the
-      // bar eases for the full 2.5s with the section change. Other pages measure
+      // bar eases for the full 1.25s with the section change. Other pages measure
       // the hero against the bar.
       let passed = window.scrollY > 0
       if (compactActions === 'past-hero') {
@@ -93,7 +93,7 @@ export function SiteHeader({
       if (passedRef.current !== null && !prefersReducedMotion()) {
         setSettle(true)
         window.clearTimeout(settleTimer)
-        settleTimer = window.setTimeout(() => setSettle(false), 2500)
+        settleTimer = window.setTimeout(() => setSettle(false), 1250)
       }
       passedRef.current = passed
       setScrolled(passed)
@@ -347,7 +347,7 @@ export function SiteHeader({
                     Explore
                   </a>
                 )}
-                <a className="empty-stage__contact-pill" href="/#contact">
+                <a className="empty-stage__contact-pill" href="/contact">
                   Contact
                 </a>
               </div>

@@ -15,8 +15,8 @@ const softwareFeatures: Array<{
   {
     src: '/images/product/software-desktop-1.png',
     alt: 'Forte fleet control dashboard coordinating drones across a site',
-    width: 1672,
-    height: 941,
+    width: 2184,
+    height: 1230,
     title: 'Collaborative Fleet Control',
     description: 'Coordinate drones to work together on shared tasks across a mission.',
     contain: true,
@@ -24,8 +24,8 @@ const softwareFeatures: Array<{
   {
     src: '/images/product/software-desktop-2.png',
     alt: 'Forte visual analysis of aerial imagery',
-    width: 1672,
-    height: 941,
+    width: 2184,
+    height: 1230,
     title: 'AI-Assisted Visual Analysis',
     description:
       'Use AI and computer vision to support the processing and interpretation of aerial imagery.',
@@ -34,8 +34,8 @@ const softwareFeatures: Array<{
   {
     src: '/images/product/software-desktop-3.png',
     alt: 'Forte autonomy software extending lower-cost drones',
-    width: 1670,
-    height: 941,
+    width: 3640,
+    height: 2050,
     title: 'Autonomy for Accessible Robotics',
     description:
       'Expand what lower-cost drones can achieve through intelligent software and coordinated operation.',

@@ -177,12 +177,6 @@ function mountPages(stage: Element, desktop: boolean) {
           items: '.hardware__tile',
         },
         {
-          trigger: '.product-contact',
-          box: '.contact__copy',
-          lines: ['.contact__title', '.product-contact__body'],
-          items: '.product-contact__form',
-        },
-        {
           trigger: '.ideal',
           box: '.ideal__heading',
           lines: ['.ideal__pill', '.ideal__desktop-title', '.ideal__lead'],
@@ -195,28 +189,10 @@ function mountPages(stage: Element, desktop: boolean) {
           items: '.response__benefit',
         },
         {
-          trigger: '.app-contact',
-          box: '.app-contact__copy',
-          lines: ['.app-contact__title', '.app-contact__body'],
-          items: '.app-contact__form',
-        },
-        {
           trigger: '.team',
           box: '.team__heading-block',
           lines: ['.team__pill', '.team__desktop-title', '.team__lead'],
           items: '.team__feature',
-        },
-        {
-          trigger: '.partners',
-          box: '.partners__heading',
-          lines: ['.partners__pill', '.partners__desktop-title', '.partners__lead'],
-          items: '.partners__row',
-        },
-        {
-          trigger: '.contact-hero',
-          box: '.contact__copy',
-          lines: ['.contact__eyebrow', '.contact__title', '.contact__benefits'],
-          items: '.contact__form',
         },
       ]
     : [
@@ -233,12 +209,6 @@ function mountPages(stage: Element, desktop: boolean) {
           items: '.hardware__card',
         },
         {
-          trigger: '.product-contact',
-          box: '.contact__copy',
-          lines: ['.contact__title', '.product-contact__body'],
-          items: '.product-contact__form',
-        },
-        {
           trigger: '.ideal',
           box: '.ideal__copy',
           lines: ['.ideal__eyebrow', '.ideal__title', '.ideal__body'],
@@ -251,28 +221,10 @@ function mountPages(stage: Element, desktop: boolean) {
           items: '.response__item',
         },
         {
-          trigger: '.app-contact',
-          box: '.app-contact__copy',
-          lines: ['.app-contact__eyebrow', '.app-contact__title', '.app-contact__body'],
-          items: '.app-contact__form',
-        },
-        {
           trigger: '.team',
           box: '.team__copy',
           lines: ['.team__eyebrow', '.team__title', '.team__body'],
           items: '.team__item',
-        },
-        {
-          trigger: '.partners',
-          box: '.partners__copy',
-          lines: ['.partners__eyebrow', '.partners__title', '.partners__body'],
-          items: '.partners__card',
-        },
-        {
-          trigger: '.contact-hero',
-          box: '.contact__copy',
-          lines: ['.contact__eyebrow', '.contact__title', '.contact__benefits'],
-          items: '.contact__form',
         },
       ]
 

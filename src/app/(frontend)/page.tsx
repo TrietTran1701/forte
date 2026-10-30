@@ -123,7 +123,7 @@ export default function HomePage() {
               {heroDescription[1]}
             </p>
           </div>
-          <a className={`hero__cta ${bodyFont.className}`} href="#contact">
+          <a className={`hero__cta ${bodyFont.className}`} href="/contact">
             Get a Demo
           </a>
         </div>
@@ -222,9 +222,9 @@ export default function HomePage() {
                 type="email"
               />
             </label>
-            <button className="contact__submit" type="button">
+            <a className="contact__submit" href="/contact">
               Get a Demo
-            </button>
+            </a>
           </div>
         </div>
       </section>

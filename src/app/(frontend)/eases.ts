@@ -14,6 +14,3 @@ export const EASE_INDICATOR = CustomEase.create(
 
 /** Landing-page scroll steps — cubic-bezier(0.48, 0.01, 0.28, 0.99). */
 export const EASE_SCROLL = CustomEase.create('forteScroll', 'M0,0 C0.48,0.01 0.28,0.99 1,1')
-
-/** Product carousel's delayed slide — cubic-bezier(0.45, 0.01, 0.49, 1). */
-export const EASE_CAROUSEL = CustomEase.create('forteCarousel', 'M0,0 C0.45,0.01 0.49,1 1,1')
