@@ -19,6 +19,15 @@ body {
   font-family: var(--font-family-body);
 }
 
+/* Artwork and sections are composed for a 1440px frame. Wider screens keep that
+   frame centered, with empty space on either side. */
+.site-frame {
+  width: 100%;
+  max-width: 1440px;
+  min-width: 0;
+  margin-inline: auto;
+}
+
 button {
   font: inherit;
 }
@@ -27,7 +36,8 @@ button {
   display: flex;
   flex-direction: column;
   align-items: center;
-  width: 1440px;
+  width: 100%;
+  max-width: 1440px;
   margin-inline: auto;
   padding: 28px 112px 210px 112px;
   gap: 110px;
@@ -101,6 +111,9 @@ button {
   :is(.empty-stage--home, .empty-stage--products, .empty-stage--applications, .empty-stage--about, .empty-stage--contact)
     .empty-stage__bar {
     position: fixed;
+    /* Stay inside the 1440px frame when the viewport is wider than the frame. */
+    left: max(var(--spacing-20), calc((100% - 1440px) / 2 + var(--spacing-20)));
+    right: max(var(--spacing-20), calc((100% - 1440px) / 2 + var(--spacing-20)));
   }
 
   :is(.empty-stage--home, .empty-stage--products, .empty-stage--applications, .empty-stage--about, .empty-stage--contact)
