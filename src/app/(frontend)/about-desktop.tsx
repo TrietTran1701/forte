@@ -9,8 +9,7 @@ import { EASE_INDICATOR } from './eases'
 gsap.registerPlugin(useGSAP)
 
 const PROGRESS_SECONDS = 2
-const INDICATOR_FILL_START = 1
-const INDICATOR_FILL_WIDTH = 80
+const INDICATOR_SCALE_START = 1 / 80
 
 type AboutSlide = {
   headingSrc: string
@@ -26,34 +25,34 @@ type AboutSlide = {
 
 const aboutSlides: AboutSlide[] = [
   {
-    headingSrc: '/images/home/key-1-heading.png',
-    extendedSrc: '/images/home/key-1-extended.png',
-    headingWidth: 1560,
-    headingHeight: 2160,
-    extendedWidth: 3060,
-    extendedHeight: 2160,
+    headingSrc: '/images/home/key-1-heading.webp',
+    extendedSrc: '/images/home/key-1-extended.webp',
+    headingWidth: 936,
+    headingHeight: 1296,
+    extendedWidth: 1836,
+    extendedHeight: 1296,
     alt: 'Drone fleet over a warehouse with live feed, patrol route, and fleet status',
     title: 'Rapid Deployment',
     description: 'Deliver highly effective, easy-to-deploy drone security solutions',
   },
   {
-    headingSrc: '/images/home/key-2-heading.png',
-    extendedSrc: '/images/home/key-2-extended.png',
-    headingWidth: 1560,
-    headingHeight: 2160,
-    extendedWidth: 3060,
-    extendedHeight: 2160,
+    headingSrc: '/images/home/key-2-heading.webp',
+    extendedSrc: '/images/home/key-2-extended.webp',
+    headingWidth: 936,
+    headingHeight: 1296,
+    extendedWidth: 1836,
+    extendedHeight: 1296,
     alt: 'Drone launching from a dock with site-ready checks and an auto-patrol route',
     title: 'Monitor Continuously',
     description: 'Enable continuous surveillance with minimal human error or delay',
   },
   {
-    headingSrc: '/images/home/key-3-heading.png',
-    extendedSrc: '/images/home/key-3-extended.png',
-    headingWidth: 1560,
-    headingHeight: 2160,
-    extendedWidth: 3060,
-    extendedHeight: 2160,
+    headingSrc: '/images/home/key-3-heading.webp',
+    extendedSrc: '/images/home/key-3-extended.webp',
+    headingWidth: 936,
+    headingHeight: 1296,
+    extendedWidth: 1836,
+    extendedHeight: 1296,
     alt: 'Operator reviewing live drone feeds, alert trends, and operational efficiency',
     title: 'Lower Operating Costs',
     description: 'Reduce operational costs while improving safety and visibility',
@@ -73,7 +72,7 @@ export function AboutDesktop({ bodyClassName }: { bodyClassName: string }) {
       const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
       const canHover = window.matchMedia('(hover: hover)').matches
       const indexRef = { current: 0 }
-      const holds = { hover: false, focus: false }
+      const holds = { hover: false, focus: false, offscreen: false }
       let progressTween: gsap.core.Tween | null = null
 
       const fills = () =>
@@ -81,14 +80,14 @@ export function AboutDesktop({ bodyClassName }: { bodyClassName: string }) {
 
       const syncPause = () => {
         if (!progressTween) return
-        if (holds.hover || holds.focus) progressTween.pause()
+        if (holds.hover || holds.focus || holds.offscreen) progressTween.pause()
         else progressTween.resume()
       }
 
       const resetFills = () => {
         fills().forEach((fill) => {
           gsap.killTweensOf(fill)
-          gsap.set(fill, { width: INDICATOR_FILL_START })
+          gsap.set(fill, { scaleX: INDICATOR_SCALE_START })
         })
       }
 
@@ -105,12 +104,12 @@ export function AboutDesktop({ bodyClassName }: { bodyClassName: string }) {
         if (!fill) return
 
         if (reducedMotion) {
-          gsap.set(fill, { width: INDICATOR_FILL_WIDTH })
+          gsap.set(fill, { scaleX: 1 })
           return
         }
 
         progressTween = gsap.to(fill, {
-          width: INDICATOR_FILL_WIDTH,
+          scaleX: 1,
           duration: PROGRESS_SECONDS,
           ease: EASE_INDICATOR,
           onComplete: () => playback.goTo(index + 1),
@@ -168,6 +167,12 @@ export function AboutDesktop({ bodyClassName }: { bodyClassName: string }) {
         }
       }
 
+      const observer = new IntersectionObserver(([entry]) => {
+        holds.offscreen = !entry?.isIntersecting
+        syncPause()
+      })
+      observer.observe(root)
+
       root.addEventListener('focusin', onFocusIn)
       root.addEventListener('focusout', onFocusOut)
       root.addEventListener('keydown', onKeyDown)
@@ -180,6 +185,7 @@ export function AboutDesktop({ bodyClassName }: { bodyClassName: string }) {
       playback.startProgress(0)
 
       return () => {
+        observer.disconnect()
         root.removeEventListener('focusin', onFocusIn)
         root.removeEventListener('focusout', onFocusOut)
         root.removeEventListener('keydown', onKeyDown)
@@ -224,6 +230,7 @@ export function AboutDesktop({ bodyClassName }: { bodyClassName: string }) {
                 <img
                   alt={isActive ? '' : slide.alt}
                   className="about-cards__image about-cards__image--heading"
+                  decoding="async"
                   draggable={false}
                   height={slide.headingHeight}
                   src={slide.headingSrc}
@@ -232,6 +239,7 @@ export function AboutDesktop({ bodyClassName }: { bodyClassName: string }) {
                 <img
                   alt={isActive ? slide.alt : ''}
                   className="about-cards__image about-cards__image--extended"
+                  decoding="async"
                   draggable={false}
                   height={slide.extendedHeight}
                   src={slide.extendedSrc}

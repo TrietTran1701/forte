@@ -568,13 +568,16 @@ button {
   pointer-events: none;
 }
 
-.product-hero__photo {
+.product-hero__photo,
+.application-hero__photo,
+.about-hero__photo {
   position: absolute;
-  top: -4.61%;
-  left: 0.01%;
-  width: 109.13%;
-  height: 109.08%;
+  inset: 0;
+  width: 100%;
+  height: 100%;
   max-width: none;
+  object-fit: cover;
+  object-position: center center;
 }
 
 .product-hero__mobile {
@@ -659,14 +662,6 @@ button {
   pointer-events: none;
 }
 
-.application-hero__photo {
-  position: absolute;
-  top: -4.61%;
-  left: 0.01%;
-  width: 109.13%;
-  height: 109.08%;
-  max-width: none;
-}
 
 .application-hero__mobile {
   display: none;
@@ -724,14 +719,6 @@ button {
   pointer-events: none;
 }
 
-.about-hero__photo {
-  position: absolute;
-  top: -4.61%;
-  left: 0.01%;
-  width: 109.13%;
-  height: 109.08%;
-  max-width: none;
-}
 
 .about-hero__mobile {
   display: none;
@@ -911,6 +898,10 @@ button {
 
 .home-hero__mobile {
   display: none;
+}
+
+.home-hero .hero__image {
+  object-position: center center;
 }
 
 .home-hero .hero__copy {
@@ -1144,6 +1135,7 @@ button {
   object-fit: cover;
   opacity: 0;
   pointer-events: none;
+  will-change: opacity;
   transition: opacity 0.5s cubic-bezier(0.42, 0, 0.58, 1);
 }
 
@@ -1179,8 +1171,7 @@ button {
 }
 
 .about-cards__caption-fill {
-  background: var(--overlay-black-40);
-  backdrop-filter: blur(10px);
+  background: rgb(0 0 0 / 0.55);
 }
 
 .about-cards__caption-gradient {
@@ -1246,9 +1237,7 @@ button {
   font-weight: var(--font-weight-regular);
   line-height: var(--font-line-height-xs);
   letter-spacing: 0;
-  transition:
-    opacity 0.4s cubic-bezier(0.42, 0, 0.58, 1),
-    max-height 0.4s cubic-bezier(0.42, 0, 0.58, 1);
+  transition: opacity 0.4s cubic-bezier(0.42, 0, 0.58, 1);
 }
 
 .about-cards__card.is-active .about-cards__description {
@@ -1291,11 +1280,13 @@ button {
   top: -1px;
   bottom: -1px;
   left: -1px;
-  width: 0;
+  width: 80px;
   border-radius: var(--radius-full);
   background: var(--color-neutral-800);
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
   pointer-events: none;
+  transform: scaleX(0.0125);
+  transform-origin: left center;
 }
 
 .product {
@@ -1962,6 +1953,10 @@ button {
     mask-image: none;
   }
 
+  .home-hero .hero__image {
+    object-position: center top;
+  }
+
   .home-hero__veil {
     display: none;
   }
@@ -2420,6 +2415,7 @@ button {
   width: max-content;
   height: 100%;
   padding-inline: var(--spacing-6);
+  will-change: transform;
 }
 
 .card-carousel__card {
@@ -2473,8 +2469,7 @@ button {
 }
 
 .card-carousel__caption-fill {
-  background: var(--overlay-black-40);
-  backdrop-filter: blur(5px);
+  background: rgb(0 0 0 / 0.55);
 }
 
 .card-carousel__caption-gradient {
@@ -2553,11 +2548,13 @@ button {
   top: -1px;
   bottom: -1px;
   left: -1px;
-  width: 0;
+  width: 80px;
   border-radius: var(--radius-full);
   background: var(--color-neutral-800);
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
   pointer-events: none;
+  transform: scaleX(0.0125);
+  transform-origin: left center;
 }
 
 @container (max-width: 374px) {
@@ -5840,37 +5837,10 @@ button {
   }
 
   .empty-stage__contact-pill {
-    position: relative;
-    overflow: hidden;
-    border: 1px solid var(--color-base-white);
+    border: 0;
     background: var(--surface-brand);
     color: var(--text-inverse);
-    box-shadow:
-      0 2px 4px rgba(255, 255, 255, 0.1),
-      inset 0 1px 1px rgba(255, 255, 255, 0.12);
-    backdrop-filter: blur(10px);
-  }
-
-  .empty-stage--applications .empty-stage__contact-pill {
-    border: 0;
     box-shadow: none;
-  }
-
-  .empty-stage--applications .empty-stage__contact-pill::before {
-    opacity: 0;
-  }
-
-  .empty-stage__contact-pill::before {
-    content: '';
-    position: absolute;
-    inset: -1px;
-    background: linear-gradient(
-      to bottom,
-      rgba(255, 255, 255, 0.1),
-      rgba(166, 166, 166, 0) 50%,
-      rgba(0, 0, 0, 0.05)
-    );
-    pointer-events: none;
   }
 
   html:has(.empty-stage--fit),

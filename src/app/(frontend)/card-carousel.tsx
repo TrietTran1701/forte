@@ -11,8 +11,7 @@ gsap.registerPlugin(useGSAP)
 const PROGRESS_SECONDS = 2
 const SLIDE_SECONDS = 0.5
 const DRAG_THRESHOLD = 48
-const INDICATOR_FILL_START = 1
-const INDICATOR_FILL_WIDTH = 80
+const INDICATOR_SCALE_START = 1 / 80
 
 type FeatureSlide = {
   src: string
@@ -23,19 +22,19 @@ type FeatureSlide = {
 
 const featureSlides: FeatureSlide[] = [
   {
-    src: '/images/Key%201.png',
+    src: '/images/key-1.webp',
     alt: 'Drone fleet over a warehouse with live feed, patrol route, and fleet status',
     title: 'Rapid Deployment',
     description: 'Deliver highly effective, easy-to-deploy drone security solutions',
   },
   {
-    src: '/images/Key%202.png',
+    src: '/images/key-2.webp',
     alt: 'Drone launching from a dock with site-ready checks and an auto-patrol route',
     title: 'Monitor Continuously',
     description: 'Enable continuous surveillance with minimal human error or delay',
   },
   {
-    src: '/images/Key%203.png',
+    src: '/images/key-3.webp',
     alt: 'Operator reviewing live drone feeds, alert trends, and operational efficiency',
     title: 'Lower Operating Costs',
     description: 'Reduce operational costs while improving safety and visibility',
@@ -57,30 +56,34 @@ export function CardCarousel({ bodyClassName }: { bodyClassName: string }) {
     const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
     const canHover = window.matchMedia('(hover: hover)').matches
     const indexRef = { current: 0 }
-    const holds = { hover: false, focus: false, drag: false }
+    const holds = { hover: false, focus: false, drag: false, offscreen: false }
     let progressTween: gsap.core.Tween | null = null
     let slideTween: gsap.core.Tween | null = null
     let drag: { pointerId: number; x: number; origin: number } | null = null
+    let stepPx = 328
+    const setX = gsap.quickSetter(track, 'x', 'px')
 
-    const step = () => {
+    const measure = () => {
       const card = track.querySelector<HTMLElement>('.card-carousel__card')
       const gap = Number.parseFloat(getComputedStyle(track).columnGap) || 16
-      return (card?.offsetWidth || 312) + gap
+      stepPx = (card?.offsetWidth || 312) + gap
     }
+
+    const step = () => stepPx
 
     const fills = () =>
       Array.from(root.querySelectorAll<HTMLElement>('.card-carousel__indicator-fill'))
 
     const syncPause = () => {
       if (!progressTween) return
-      if (holds.hover || holds.focus || holds.drag) progressTween.pause()
+      if (holds.hover || holds.focus || holds.drag || holds.offscreen) progressTween.pause()
       else progressTween.resume()
     }
 
     const resetFills = () => {
       fills().forEach((fill) => {
         gsap.killTweensOf(fill)
-        gsap.set(fill, { width: INDICATOR_FILL_START })
+        gsap.set(fill, { scaleX: INDICATOR_SCALE_START })
       })
     }
 
@@ -98,7 +101,7 @@ export function CardCarousel({ bodyClassName }: { bodyClassName: string }) {
       if (!fill) return
 
       progressTween = gsap.to(fill, {
-        width: INDICATOR_FILL_WIDTH,
+        scaleX: 1,
         duration: PROGRESS_SECONDS,
         ease: EASE_INDICATOR,
         onComplete: () => playback.goTo(index + 1),
@@ -161,7 +164,7 @@ export function CardCarousel({ bodyClassName }: { bodyClassName: string }) {
 
     const onPointerMove = contextSafe((event: PointerEvent) => {
       if (!drag || drag.pointerId !== event.pointerId) return
-      gsap.set(track, { x: drag.origin + (event.clientX - drag.x) })
+      setX(drag.origin + (event.clientX - drag.x))
     })
 
     const onPointerUp = contextSafe((event: PointerEvent) => {
@@ -212,6 +215,7 @@ export function CardCarousel({ bodyClassName }: { bodyClassName: string }) {
     }
 
     const onResize = contextSafe(() => {
+      measure()
       gsap.set(track, { x: -indexRef.current * step() })
     })
 
@@ -225,6 +229,15 @@ export function CardCarousel({ bodyClassName }: { bodyClassName: string }) {
         playback.goTo(indexRef.current - 1)
       }
     }
+
+    const observer = new IntersectionObserver(([entry]) => {
+      holds.offscreen = !entry?.isIntersecting
+      syncPause()
+    })
+    observer.observe(root)
+
+    measure()
+    gsap.set(track, { force3D: true, x: 0 })
 
     viewport.addEventListener('pointerdown', onPointerDown)
     viewport.addEventListener('pointermove', onPointerMove)
@@ -243,6 +256,7 @@ export function CardCarousel({ bodyClassName }: { bodyClassName: string }) {
     playback.startProgress(0)
 
     return () => {
+      observer.disconnect()
       viewport.removeEventListener('pointerdown', onPointerDown)
       viewport.removeEventListener('pointermove', onPointerMove)
       viewport.removeEventListener('pointerup', onPointerUp)
@@ -279,6 +293,7 @@ export function CardCarousel({ bodyClassName }: { bodyClassName: string }) {
                 <img
                   alt={isClone ? '' : slide.alt}
                   className="card-carousel__image"
+                  decoding="async"
                   draggable={false}
                   height={432}
                   src={slide.src}
