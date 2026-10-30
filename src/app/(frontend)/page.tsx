@@ -107,9 +107,9 @@ export default function HomePage() {
               alt=""
               className="hero__image"
               fetchPriority="high"
-              height={1624}
+              height={812}
               src="/images/home-hero-mobile.webp"
-              width={750}
+              width={375}
             />
           </picture>
           <div aria-hidden="true" className="home-hero__veil" />
